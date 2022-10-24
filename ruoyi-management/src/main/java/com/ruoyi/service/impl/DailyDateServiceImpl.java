@@ -27,7 +27,7 @@ import java.util.*;
 @Service
 public class DailyDateServiceImpl implements DailyDateService {
     //测试路径
-//    private static String URL = "https://test-api.adnet.qq.com/open/v1.1/report/get";
+    //private static String URL = "https://test-api.adnet.qq.com/open/v1.1/report/get";
     //正式路径
     private final static String URL = "https://api.adnet.qq.com/open/v1.1/report/";
     //token
