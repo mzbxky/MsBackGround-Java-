@@ -1,0 +1,7 @@
+Application Version: ${ruoyi.version}
+Spring Boot Version: ${spring-boot.version}
+*☆∵ ▁▂▄▂▁．★∵∴☆．★∵∴
+∴★◢█████◣* ☆．∴★∵★ * ☆
+☆◢████☆██◣．∴天气冷了,☆
+◢■◤█████◥█◣．送你一件毛衣,* ★
+◥◤∴█████．◥◤∵小心别著凉了哦！

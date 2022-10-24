@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.dao.ManagementMapper">
+<!--    msa.nick,msa.utime,msa.state,msa.cid,msa.tid-->
+    <select id="selectList" resultType="com.ruoyi.domain.vo.MediaManagementVo">
+        select msa.id,msa.name,msa.pkg,msa.utime,msa.state,msa.cid,msa.tid,msa.version,su.nick_name as userName,msa.exp,su.user_id as userId
+        from ms_app msa
+        left join sys_user su on su.user_id = msa.uid
+        where msa.id is not null
+        <if test="managementQuery.id !=null and managementQuery.id!=''">
+            and msa.id = #{managementQuery.id}
+        </if>
+        <if test="managementQuery.name !=null and managementQuery.name!=''">
+            and msa.name like concat('%',#{managementQuery.name},'%')
+        </if>
+        <if test="managementQuery.pkg!=null and managementQuery.pkg!=''">
+            and msa.pkg like concat('%',#{managementQuery.pkg},'%')
+        </if>
+        <if test="managementQuery.NowTime!=null and managementQuery.NowTime!=''">
+            and msa.utime = #{managementQuery.NowTime}
+        </if>
+        <if test="managementQuery.userName!=null and managementQuery.userName!=''">
+            and msa.uid = #{managementQuery.userName}
+        </if>
+        <if test="managementQuery.exp!=null and managementQuery.exp!=''">
+            and msa.exp = #{managementQuery.exp}
+        </if>
+    </select>
+    <update id="updateInfo">
+        update ms_app msa left join sys_user su on msa.uid = su.user_id
+        <set>
+                msa.name = #{updateMediaManagementForm.name},
+                msa.exp = #{updateMediaManagementForm.exp},
+            <if test="updateMediaManagementForm.pck!=null and updateMediaManagementForm.pck!=''">
+                msa.pkg = #{updateMediaManagementForm.pck},
+            </if>
+                msa.state = #{updateMediaManagementForm.state},
+            <if test="updateMediaManagementForm.cid!=null and updateMediaManagementForm.cid!=''">
+                msa.cid = #{updateMediaManagementForm.cid},
+            </if>
+            <if test="updateMediaManagementForm.tid!=null and updateMediaManagementForm.tid!=''">
+                msa.tid = #{updateMediaManagementForm.tid},
+            </if>
+                msa.utime = #{updateMediaManagementForm.utime},
+                msa.version = #{updateMediaManagementForm.version},
+            <if test="updateMediaManagementForm.userId != null">
+                msa.uid = #{updateMediaManagementForm.userId}
+            </if>
+        </set>
+        <where>
+                 msa.id = #{updateMediaManagementForm.id}
+        </where>
+    </update>
+    <delete id="deleteInfo" parameterType="String">
+        delete msa.*
+        from ms_app msa
+        where msa.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <insert id="insertInfo">
+        insert into ms_app(
+                id,name,pkg,ctime,utime,state,cid,tid,uid,exp)
+                values (
+                #{insertIntoManagementForm.id},#{insertIntoManagementForm.name},
+                #{insertIntoManagementForm.pkg},#{insertIntoManagementForm.ctime},
+                #{insertIntoManagementForm.utime},
+                #{insertIntoManagementForm.state},#{insertIntoManagementForm.cid},
+                #{insertIntoManagementForm.tid},
+                #{insertIntoManagementForm.userName},#{insertIntoManagementForm.exp}
+        )
+    </insert>
+    <select id="selectUser" resultType="com.ruoyi.domain.vo.UserVo">
+        select sys_user.user_id as userId,sys_user.user_name as userName,sys_user.nick_name as nickName from sys_user where user_name != 'admin' and user_name != 'root'
+    </select>
+    <select id="userInfo" resultType="com.ruoyi.domain.vo.UserInfoVo">
+        select sys_user.user_id as userId,sr.role_key as roleKey from sys_user
+        left join sys_user_role as sur on sur.user_id = sys_user.user_id
+        left join sys_role as sr on sr.role_id = sur.role_id
+        where sys_user.user_name = #{varuserName}
+    </select>
+</mapper>

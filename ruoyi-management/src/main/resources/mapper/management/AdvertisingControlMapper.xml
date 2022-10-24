@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.dao.AdvertisingControlMapper">
+    <resultMap id="selectOneByMany" type="com.ruoyi.domain.vo.SelectOneByManyVo">
+        <id column="user_id" property="userId"></id>
+        <result column="user_name" property="userName"></result>
+        <collection property="nameList" column="user_id" ofType="com.ruoyi.domain.vo.AdvertisingControlVo" select="nameList">
+        </collection>
+    </resultMap>
+    <resultMap id="nameMap" type="com.ruoyi.domain.vo.AdvertisingControlVo">
+        <result column="name" property="name"/>
+    </resultMap>
+    <select id="nameList" resultMap="nameMap">
+        select ms_app.name from ms_app where uid = #{user_id}
+    </select>
+    <select id="oneByMany" resultMap="selectOneByMany">
+        select sys_user.user_id,sys_user.user_name from sys_user
+    </select>
+<!--    查询列表-->
+    <select id="selectControlList" resultType="com.ruoyi.domain.vo.AdvertisingControlVo">
+        select ads.id,ads.pck,ads.version,ads.state,ads.confirm,adc.alt,ads.ctime,ads.name,ads.channel
+        from ad_state ads
+        left join ad_channel adc on ads.channel = adc.name
+        left join ms_app ma on ma.exp = ads.name
+        left join sys_user su on ma.uid = su.user_id
+        where ads.id is not null
+        <if test="query.pck != null and query.pck !=''">
+            and ads.pck like concat('%',#{query.pck},'%')
+        </if>
+        <if test="query.channel != null and query.channel !=''">
+            and ads.channel = #{query.channel}
+        </if>
+        <if test="query.id !=null and query.id != ''">
+            and ads.id = #{query.id}
+        </if>
+        <if test="query.NowTime !=null and query.NowTime != ''">
+            and ads.ctime = #{query.NowTime}
+        </if>
+        <if test="query.name != null and query.name != ''">
+            and ads.channel = #{query.name}
+        </if>
+        <if test="query.mediaName != null and query.mediaName != ''">
+            and ma.name like concat('%',#{query.mediaName},'%')
+        </if>
+        <if test="query.mediaName != null and query.mediaName != ''">
+            and ma.name = #{query.mediaName}
+        </if>
+        <if test="query.appName != null and query.appName != ''">
+            and ads.name = #{query.appName}
+        </if>
+        <if test="query.userName != null">
+            and su.user_id = #{query.userName}
+        </if>
+    </select>
+<!--   修改 -->
+<!--            <if test="updateAdvertisingForm.name!=null and updateAdvertisingForm.name!=''">
+            ads.name = #{updateAdvertisingForm.name},
+        </if>
+        <if test="updateAdvertisingForm.pck!=null and updateAdvertisingForm.pck!=''">
+            ads.pck = #{updateAdvertisingForm.pck},
+        </if>-->
+    <update id="updateControlList">
+    update ad_state ads left join ad_channel adc on ads.channel = adc.name
+    <set>
+            ads.version = #{updateAdvertisingForm.version},
+            ads.channel = #{updateAdvertisingForm.channel},
+            ads.ctime = #{updateAdvertisingForm.ctime},
+    </set>
+        <where>
+            ads.id = #{updateAdvertisingForm.id}
+        </where>
+    </update>
+<!--    删除-->
+    <delete id="deleteControlInfo" parameterType="String">
+        delete ads.*
+        from ad_state ads
+        where ads.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+<!--    广告开关状态-->
+    <update id="changeType" parameterType="String">
+        update ad_state set state = (case state when 0 then 1 when 1 then 0 else 1 end )
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+<!--    二次确认-->
+    <update id="changeSecondConfirm" parameterType="String">
+        update ad_state set confirm = (case confirm when 0 then 1 when 1 then 0 else 1 end )
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+<!--    插入-->
+    <insert id="insert" parameterType="java.util.List" >
+            insert into ad_state
+        (       id,
+                name,
+                pck,
+                version,
+                state,
+                ctime,
+                confirm,
+                channel
+        )
+        values
+        <foreach collection="insertInfo" item="item" index="index" open="" separator="," close="">
+            (#{item.id},#{item.name},#{item.pck},#{item.version},#{item.state},#{item.ctime},#{item.confirm},#{item.channel})
+        </foreach>
+    </insert>
+<!--    插入渠道-->
+    <insert id="insertChannel" parameterType="com.ruoyi.form.InsertChannelForm">
+        insert into ad_channel (id, name, alt) VALUES (#{insertChannelForm.id},#{insertChannelForm.name},#{insertChannelForm.alt})
+    </insert>
+<!--    根据所属用户查询媒体-->
+    <select id="selectMediaByUser" resultType="com.ruoyi.vo.MediaByUserVo" parameterType="String">
+        select ms_app.name,ms_app.exp,ms_app.pkg from ms_app
+        <where>
+            <if test="userName != 'null' and userName != '' and userName != 0">
+                and ms_app.uid = #{userName}
+            </if>
+        </where>
+    </select>
+<!--    查询渠道-->
+<!--  -->
+    <select id="selectChannel" resultType="com.ruoyi.domain.vo.ChannelVo">
+        select ad_channel.name,ad_channel.alt from ad_channel
+    </select>
+</mapper>

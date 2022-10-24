@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.dao.PangolinDataMapper">
+
+    <insert id="insertPangolinService">
+        insert into ms_csj_data_day(
+            id, appid, appname, slotid, package_name, reqcount, retcount, pv, click, clickrate, revenue, ecpm, mediation,slotname,date
+        ) VALUES
+        <foreach collection="list" item="item" index="index" open="" separator="," close="">
+            (#{item.id},#{item.app_id},#{item.app_name},#{item.ad_slot_id},
+            #{item.package_name},#{item.request},#{item.response},
+            #{item.show},#{item.click},#{item.click_rate},#{item.revenue},
+            #{item.ecpm},#{item.use_mediation},#{item.slot_name},#{item.date})
+        </foreach>
+        ON DUPLICATE KEY UPDATE pv = values(pv),click = values(click),revenue = values(revenue),ecpm = values(ecpm),
+        clickrate = values(clickrate),reqcount = values(reqcount),retcount = values(retcount)
+    </insert>
+
+<!--    查询 -->
+    <select id="selectPangolinData" resultType="com.ruoyi.vo.DataReportSecondVo">
+        select date,ecpm,revenue,clickrate as click_rate,click,reqcount as request,retcount as response,appname as app_name,slotname as slot_name
+        from ms_csj_data_day
+        <where>
+            <if test="reportDataForMySqlQuery.appName != null and reportDataForMySqlQuery.appName != ''">
+                and appname like concat('%',#{reportDataForMySqlQuery.appName},'%')
+            </if>
+            <if test="reportDataForMySqlQuery.slotName != null and reportDataForMySqlQuery.slotName != ''">
+                and slotname = #{reportDataForMySqlQuery.slotName}
+            </if>
+            <if test="reportDataForMySqlQuery.startDate != null and reportDataForMySqlQuery.startDate != ''">
+                and date(date) &gt;= #{reportDataForMySqlQuery.startDate}
+            </if>
+            <if test="reportDataForMySqlQuery.endDate != null and reportDataForMySqlQuery.endDate != ''">
+                and date(date) &lt;= #{reportDataForMySqlQuery.endDate}
+            </if>
+            <if test="reportDataForMySqlQuery.codeBit != null and reportDataForMySqlQuery.codeBit != ''">
+                and slotid = #{reportDataForMySqlQuery.codeBit}
+            </if>
+        </where>
+        <trim prefix="group by" prefixOverrides="and|or">
+        <if test="reportDataForMySqlQuery.byDate == true">
+            date
+        </if>
+        <if test="reportDataForMySqlQuery.byAppName == true">
+                and appname
+        </if>
+        <if test="reportDataForMySqlQuery.bySlot == true">
+            and slotid
+        </if>
+        </trim>
+        order by date asc
+    </select>
+
+<!--    查询合计  -->
+    <select id="sumList" resultType="com.ruoyi.vo.DataReportSecondVo">
+        select date,SUM(ecpm) as ecpm,SUM(revenue) as revenue,round(avg(clickrate),2) as click_rate,sum(click) as click,SUM(reqcount) as request,SUM(retcount) as response,slotid as ad_slot_id,appname as app_name,
+               slotname as slot_name
+        from ms_csj_data_day
+        <where>
+            <if test="reportDataForMySqlQuery.appName != null and reportDataForMySqlQuery.appName != ''">
+                and appname like concat('%',#{reportDataForMySqlQuery.appName},'%')
+            </if>
+            <if test="reportDataForMySqlQuery.startDate != null and reportDataForMySqlQuery.startDate != ''">
+                and date(date) &gt;= #{reportDataForMySqlQuery.startDate}
+            </if>
+            <if test="reportDataForMySqlQuery.endDate != null and reportDataForMySqlQuery.endDate != ''">
+                and date(date) &lt;= #{reportDataForMySqlQuery.endDate}
+            </if>
+        </where>
+        <trim prefix="group by" prefixOverrides=",">
+            <if test="reportDataForMySqlQuery.byDate == true or reportDataForMySqlQuery.byAppName == false">
+                date
+            </if>
+            <if test="reportDataForMySqlQuery.byAppName == true">
+                 ,appname
+            </if>
+        </trim>
+        order by date asc
+    </select>
+
+<!--    查询应用名称-->
+    <select id="selectAppName" resultType="java.lang.String">
+        select appname from ms_csj_data_day group by appname
+    </select>
+<!--    查询代码位  -->
+    <select id="selectCodeBit" resultType="java.lang.Long">
+        select slotid from ms_csj_data_day where appname = #{appName} group by slotid
+    </select>
+<!--    查询广告位名称-->
+    <select id="selectSlotName" resultType="java.lang.String">
+        select slotname from ms_csj_data_day
+        <where>
+            <if test="appName != null and appName != ''">
+                appname = #{appName}
+            </if>
+            <if test="codeBit != null and codeBit != ''">
+                and slotid = #{codeBit}
+            </if>
+        </where>
+                group by slotname
+    </select>
+</mapper>
