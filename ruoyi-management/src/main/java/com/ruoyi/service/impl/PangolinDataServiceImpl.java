@@ -26,7 +26,7 @@ public class PangolinDataServiceImpl implements PangolinDataService {
     @Autowired
     private PangolinDataMapper pangolinDataMapper;
     public final static String URL = "https://open-api.csjplatform.com/union_media/open_api/rt/income";
-    //    获取sign
+    //获取sign
     public static String getSign(Map<String, String> request, String token){
         Set<Map.Entry<String, String>> entries=request.entrySet();
         StringBuilder str= new StringBuilder();
