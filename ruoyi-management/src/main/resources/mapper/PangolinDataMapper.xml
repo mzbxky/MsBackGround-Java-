@@ -55,7 +55,7 @@
 
 <!--    查询合计  -->
     <select id="sumList" resultType="com.ruoyi.vo.DataReportSecondVo">
-        select date,SUM(ecpm) as ecpm,SUM(revenue) as revenue,round(avg(clickrate),2) as click_rate,sum(click) as click,SUM(reqcount) as request,SUM(retcount) as response,slotid as ad_slot_id,appname as app_name,
+        select date,SUM(ecpm) as ecpm,round(SUM(revenue),2) as revenue,round(avg(clickrate),2) as click_rate,sum(click) as click,SUM(reqcount) as request,SUM(retcount) as response,slotid as ad_slot_id,appname as app_name,
                slotname as slot_name
         from ms_csj_data_day
         <where>
