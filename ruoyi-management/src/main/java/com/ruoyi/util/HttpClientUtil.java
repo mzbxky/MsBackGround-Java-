@@ -32,7 +32,7 @@ public class HttpClientUtil {
     }
     //发送请求获取JSON类型的数据
     public static JSONObject doPost(String url, Map<String, String> paramMap) {
-        //创建Http实例   
+        //创建Http实例
         //创建HttpPost实例
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
@@ -70,7 +70,6 @@ public class HttpClientUtil {
                     } else {
                         data = JSONObject.parseObject(datas.get("Data").toString());
                     }
-
                     //返回的数据就是我需要去解析的
                     return data;
                 }
