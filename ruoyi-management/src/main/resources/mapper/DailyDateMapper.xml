@@ -52,7 +52,7 @@
                 and date(msday.date) &lt;= #{dayDataListQuery.endDate}
             </if>
         </where>
-        order by msday.date asc
+        order by msday.date desc
     </select>
 
 <!-- 总览 -->
@@ -87,7 +87,7 @@
                 ,msday.medium_name
             </if>
         </trim>
-        order by msday.date asc
+        order by msday.date desc
     </select>
 <!--    查询媒体  -->
     <select id="selectMediaName" resultType="java.lang.String">

@@ -58,8 +58,9 @@ public class PangolinDataReportController {
 
     //每天早上八点半更新前一天数据
     public void anyMorningUpdate(){
-        DataReportSecondQuery dataReportSecondQuery = new DataReportSecondQuery();
-        dataReportSecondQuery.setDate(LocalDate.now().minusDays(1).toString());
-        pangolinDataService.getDataReport(dataReportSecondQuery);
+            DataReportSecondQuery dataReportSecondQuery = new DataReportSecondQuery();
+            dataReportSecondQuery.setDate(LocalDate.now().minusDays(1).toString());
+            pangolinDataService.getDataReport(dataReportSecondQuery);
+
     }
 }

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.dao.SummaryMapper">
+<!--    <select id="s">-->
+<!--        select (SELECT nick_name from sys_user WHERE user_name = #{userName}),csj.date,app.`name`,app.pkg,SUM(csj.revenue),SUM(ylh.revenue)-->
+<!--        from ms_app app-->
+<!--                 left join ms_csj_data_day csj on cid = csj.appid-->
+<!--                 left join ms_ylh_data_day ylh on tid = ylh.app_id-->
+<!--        where uid = (select user_id from sys_user where user_name = #{userName})-->
+<!--        group by app.name,csj.date-->
+<!--        ORDER BY csj.date desc  -->
+<!--    </select>-->
+<!--    每个应用每天一条数据(穿山甲) -->
+    <select id="AnyAppOneDateDataCSJ" resultType="com.ruoyi.vo.AnyAppOneDateDataVo">
+        select SUM(csj.revenue)*app.rate/100 as cincome,app.id as aid,csj.date as date,
+               (select user_id from sys_user where user_name = #{userName}) as uid,app.state
+        from ms_app app
+                 left join ms_csj_data_day csj on cid = csj.appid
+        where uid = (select user_id from sys_user where user_name = #{userName}) and csj.date = #{date}
+        group by csj.date,app.name
+    </select>
+    <!--    每个应用每天一条数据(优量汇)   -->
+    <select id="AnyAppOneDateDataYLH" resultType="com.ruoyi.vo.AnyAppOneDateDataVo">
+        select SUM(ylh.revenue)*app.rate/100 as tincome,app.id as aid,ylh.date as date,
+               (select user_id from sys_user where user_name = #{userName}) as uid,app.state
+        from ms_app app
+                 left join ms_ylh_data_day ylh on app.tid = ylh.app_id
+        where uid = (select user_id from sys_user where user_name = #{userName}) and ylh.date = #{date}
+        group by ylh.date,app.name
+    </select>
+
+<!--    整合到adata_bus表中-->
+    <insert id="insertIntoBus">
+        insert into moshang.ms_adata_bus(time, aid, uid, cincome, tincome,state) VALUES
+        <foreach collection="list" item="item" index="index" open="" separator="," close="">
+            (#{item.date},#{item.aid},#{item.uid},#{item.cincome},#{item.tincome},#{item.state})
+        </foreach>
+        ON DUPLICATE KEY UPDATE tincome = values(tincome)
+    </insert>
+<!--整合到sum表中-->
+    <select id="selectAnyUser">
+        select SUM(cincome) as cincome,SUM(tincome) as tincome,uid,time,ms_adata_bus.state as state
+        from ms_adata_bus
+        GROUP BY ms_adata_bus.time,ms_adata_bus.uid
+    </select>
+<!--    页面展示 -->
+    <select id="pageShow" resultType="com.ruoyi.vo.SummaryShowVo">
+        select bus.cincome as cincome,bus.tincome as tincome,bus.time as time,user.nick_name as nickName,app.name as appName,app.pkg as pkg,bus.tincome+bus.cincome as total
+        from ms_adata_bus bus
+        left join ms_app app on bus.aid = app.id
+        left join sys_user user on user.user_id = bus.uid
+        where bus.uid = (select user_id from sys_user where user_name = #{summaryQuery.userName})
+          <if test="summaryQuery.startDate != null and summaryQuery.startDate != ''">
+              and date(bus.time) &gt;= #{summaryQuery.startDate}
+          </if>
+        <if test="summaryQuery.endDate != null and summaryQuery.endDate != ''">
+            and date(bus.time) &lt;= #{summaryQuery.endDate}
+        </if>
+            <if test="summaryQuery.appName != null and summaryQuery.appName != ''">
+                and app.name = #{summaryQuery.appName}
+            </if>
+        <if test="summaryQuery.pkg != null and summaryQuery.pkg != ''">
+            and app.pkg = #{summaryQuery.pkg}
+        </if>
+        order by bus.time desc
+    </select>
+</mapper>
