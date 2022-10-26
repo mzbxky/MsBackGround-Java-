@@ -6,6 +6,7 @@ import com.ruoyi.dao.SummaryMapper;
 import com.ruoyi.query.SummaryQuery;
 import com.ruoyi.service.SummaryService;
 import com.ruoyi.vo.AnyAppOneDateDataVo;
+import com.ruoyi.vo.AnyUserAnyDateVo;
 import com.ruoyi.vo.ResultVo;
 import com.ruoyi.vo.SummaryShowVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,12 @@ public class SummaryServiceImpl implements SummaryService {
     @Override
     public void insertIntoBus(){
         LocalDate localDate = LocalDate.now().minusDays(1);
-        List<AnyAppOneDateDataVo> operating = summaryMapper.AnyAppOneDateDataCSJ("operating",localDate.toString());
+        List<AnyAppOneDateDataVo> operating = summaryMapper.AnyAppOneDateDataCSJ(localDate.toString());
         summaryMapper.insertIntoBus(operating);
-        List<AnyAppOneDateDataVo> operating1 = summaryMapper.AnyAppOneDateDataYLH("operating",localDate.toString());
+        List<AnyAppOneDateDataVo> operating1 = summaryMapper.AnyAppOneDateDataYLH(localDate.toString());
         summaryMapper.insertIntoBus(operating1);
-
+        List<AnyUserAnyDateVo> anyUserAnyDateVos = summaryMapper.selectAnyUser(localDate.toString());
+        summaryMapper.insertIntoSum(anyUserAnyDateVos);
     }
 
     @Override
@@ -35,10 +37,26 @@ public class SummaryServiceImpl implements SummaryService {
         PageInfo<SummaryShowVo> pageInfo = new PageInfo<>(summaryShowVos);
         ResultVo resultVo = new ResultVo();
         resultVo.setCode(-1);
-        resultVo.setMsg("查询失败");
+        resultVo.setMsg("暂无数据");
         if (summaryShowVos.size()!= 0){
             resultVo.setCode(0);
             resultVo.setMsg("查询成功");
+            resultVo.setData(pageInfo);
+        }
+        return resultVo;
+    }
+
+    @Override
+    public ResultVo pageShowUser(SummaryQuery summaryQuery) {
+        PageHelper.startPage(summaryQuery.getPageNum(),summaryQuery.getPageSize());
+        List<SummaryShowVo> summaryShowVos = summaryMapper.pageShowUser(summaryQuery);
+        PageInfo<SummaryShowVo> pageInfo = new PageInfo<>(summaryShowVos);
+        ResultVo resultVo = new ResultVo();
+        resultVo.setCode(-1);
+        resultVo.setMsg("暂无数据");
+        if (summaryShowVos .size() >0){
+            resultVo.setCode(0);
+            resultVo.setMsg("查询失败");
             resultVo.setData(pageInfo);
         }
         return resultVo;

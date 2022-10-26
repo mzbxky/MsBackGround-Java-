@@ -1,6 +1,5 @@
 package com.ruoyi.controller;
 
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.query.SummaryQuery;
 import com.ruoyi.service.SummaryService;
 import com.ruoyi.vo.ResultVo;
@@ -17,13 +16,18 @@ public class SummaryController {
     @Autowired
     private SummaryService summaryService;
 
-//    定时任务，每天汇总前一天的数据
-    public void test(){
+//    定时任务，每天汇总前一天的所有数据
+    public void beforeDay(){
         summaryService.insertIntoBus();
     }
-//    页面展示数据
+//    页面展示数据(每个应用每天)
     @GetMapping("pageShow")
     public ResultVo pageShow(SummaryQuery summaryQuery){
         return summaryService.pageShow(summaryQuery);
+    }
+    //页面展示数据（每个用户每天）
+    @GetMapping("pageShowUser")
+    public ResultVo pageShowUser(SummaryQuery summaryQuery){
+        return summaryService.pageShowUser(summaryQuery);
     }
 }

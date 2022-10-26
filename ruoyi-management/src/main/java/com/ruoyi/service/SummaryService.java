@@ -8,4 +8,6 @@ public interface SummaryService {
     void insertIntoBus();
 
     ResultVo pageShow(SummaryQuery summaryQuery);
+
+    ResultVo pageShowUser(SummaryQuery summaryQuery);
 }

@@ -19,7 +19,7 @@
                 and name like concat('%',#{platformQuery.name},'%')
             </if>
             <if test="platformQuery.company != null and platformQuery.company != ''">
-                and name like concat('%',#{platformQuery.company},'%')
+                and company like concat('%',#{platformQuery.company},'%')
             </if>
         </where>
     </select>
