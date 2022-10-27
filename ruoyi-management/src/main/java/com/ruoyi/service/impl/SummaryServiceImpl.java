@@ -56,7 +56,7 @@ public class SummaryServiceImpl implements SummaryService {
         resultVo.setMsg("暂无数据");
         if (summaryShowVos .size() >0){
             resultVo.setCode(0);
-            resultVo.setMsg("查询失败");
+            resultVo.setMsg("查询成功");
             resultVo.setData(pageInfo);
         }
         return resultVo;

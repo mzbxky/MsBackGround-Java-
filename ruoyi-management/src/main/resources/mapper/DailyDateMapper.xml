@@ -103,5 +103,6 @@
             </if>
         </where>
         group by placement_name
+
     </select>
 </mapper>

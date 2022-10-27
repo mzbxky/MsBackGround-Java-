@@ -4,11 +4,14 @@ import com.ruoyi.query.DayDataListQuery;
 import com.ruoyi.query.reportAPI.DailyDataQuery;
 import com.ruoyi.query.reportAPI.HourDataQuery;
 import com.ruoyi.service.DailyDateService;
+import com.ruoyi.service.SummaryService;
 import com.ruoyi.vo.ResultVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +27,10 @@ import java.util.List;
 public class DailyDataController {
     @Autowired
     private DailyDateService dailyDateService;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private SummaryService summaryService;
     @GetMapping("dayData")
     @ApiOperation(value = "获取天级数据(三方接口)" ,notes = "获取天级数据")
     @ApiImplicitParam(paramType="body",name="dailyDataQuery",value="获取天级数据",required=true,dataType="DailyDataQuery",dataTypeClass= DailyDataQuery.class)
@@ -77,6 +84,17 @@ public class DailyDataController {
             dailyDataQuery.setPage(1);
             dailyDataQuery.setPage_size(20);
             dailyDateService.dayData(dailyDataQuery);
-
+            //判断键是否存在
+        Boolean redisKey = stringRedisTemplate.hasKey("YLH");
+        if (redisKey){
+            stringRedisTemplate.opsForValue().increment("YLH",1);
+            if(stringRedisTemplate.opsForValue().get("YLH").equals("3")&&stringRedisTemplate.opsForValue().get("CSJ").equals("3")){
+                summaryService.insertIntoBus();
+                stringRedisTemplate.delete("YLH");
+                stringRedisTemplate.delete("CSJ");
+            }
+        }else {
+            stringRedisTemplate.opsForValue().set("YLH","1");
+        }
     }
 }

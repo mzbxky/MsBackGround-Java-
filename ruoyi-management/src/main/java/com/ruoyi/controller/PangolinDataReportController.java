@@ -3,10 +3,12 @@ package com.ruoyi.controller;
 import com.ruoyi.query.ReportDataForMySqlQuery;
 import com.ruoyi.service.PangolinDataService;
 import com.ruoyi.query.pangolinDataReport.DataReportSecondQuery;
+import com.ruoyi.service.SummaryService;
 import com.ruoyi.vo.ResultVo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,10 @@ import java.util.List;
 public class PangolinDataReportController {
     @Autowired
     private PangolinDataService pangolinDataService;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private SummaryService summaryService;
     @GetMapping("getDataReport")
     @ApiOperation(value = "穿山甲数据报告2.0" ,notes = "穿山甲数据报告2.0")
     @ApiImplicitParam(paramType="body",name="dataReportSecondQuery",value="穿山甲数据报告2.0",required=true,dataType="DataReportSecondQuery",dataTypeClass= DataReportSecondQuery.class)
@@ -61,6 +67,16 @@ public class PangolinDataReportController {
             DataReportSecondQuery dataReportSecondQuery = new DataReportSecondQuery();
             dataReportSecondQuery.setDate(LocalDate.now().minusDays(1).toString());
             pangolinDataService.getDataReport(dataReportSecondQuery);
-
+            Boolean csj = stringRedisTemplate.hasKey("CSJ");
+            if (csj){
+                stringRedisTemplate.opsForValue().increment("CSJ",1);
+                if(stringRedisTemplate.opsForValue().get("YLH").equals("3")&&stringRedisTemplate.opsForValue().get("CSJ").equals("3")){
+                    summaryService.insertIntoBus();
+                    stringRedisTemplate.delete("YLH");
+                    stringRedisTemplate.delete("CSJ");
+                }
+            }else {
+                stringRedisTemplate.opsForValue().set("CSJ","1");
+            }
     }
 }

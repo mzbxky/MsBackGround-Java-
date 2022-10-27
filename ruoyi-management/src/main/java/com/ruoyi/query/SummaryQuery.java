@@ -10,5 +10,5 @@ public class SummaryQuery {
     private String appName;
     private String startDate;
     private String endDate;
-    private String userName;
+    private String userId;
 }

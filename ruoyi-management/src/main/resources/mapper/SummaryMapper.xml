@@ -52,7 +52,10 @@
         from ms_adata_bus bus
         left join ms_app app on bus.aid = app.id
         left join sys_user user on user.user_id = bus.uid
-        where bus.uid = (select user_id from sys_user where user_name = #{summaryQuery.userName})
+        where 1=1
+        <if test="summaryQuery.userId != null and summaryQuery.userId != ''">
+           and bus.uid = #{summaryQuery.userId}
+        </if>
           <if test="summaryQuery.startDate != null and summaryQuery.startDate != ''">
               and date(bus.time) &gt;= #{summaryQuery.startDate}
           </if>
@@ -71,13 +74,16 @@
     <select id="pageShowUser" resultType="com.ruoyi.vo.SummaryShowVo">
         select sum.cincome as cincome,sum.tincome as tincome,sum.time as time,user.nick_name as nickName,sum.tincome+sum.cincome as total from ms_adata_sum sum
         left join sys_user user on user.user_id = sum.uid
-        where sum.uid = (select user_id from sys_user where user_name = 'operating')
+        where 1=1
+        <if test="summaryQuery.userId != null and summaryQuery.userId != ''">
+          and  sum.uid = #{summaryQuery.userId}
+        </if>
         <if test="summaryQuery.startDate != null and summaryQuery.startDate != ''">
             and date(sum.time) &gt;= #{summaryQuery.startDate}
         </if>
         <if test="summaryQuery.endDate != null and summaryQuery.endDate != ''">
             and date(sum.time) &lt;= #{summaryQuery.endDate}
         </if>
-        order by sum.time
+        order by sum.time desc
     </select>
 </mapper>
