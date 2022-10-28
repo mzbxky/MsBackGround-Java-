@@ -70,7 +70,7 @@ public class PangolinDataServiceImpl implements PangolinDataService {
         param.put("role_id","69197");
         param.put("sign_type","MD5");
         param.put("version","2.0");
-        param.put("timestamp",String.valueOf(System.currentTimeMillis()));//"1664510309902L"
+        param.put("timestamp",String.valueOf(System.currentTimeMillis()));
         param.put("date",date);
         param.put("region","cn");
         param.put("currency","cny");

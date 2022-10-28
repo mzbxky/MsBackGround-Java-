@@ -43,15 +43,6 @@ public class AdvertisingControlServiceImpl implements AdvertisingControlService 
         Date date = new Date();
         String dateToStr = dateFormat.format(date);
         updateAdvertisingForm.setCtime(dateToStr);
-//        AdvertisingControlQuery query = new AdvertisingControlQuery();
-//        query.setAppName(updateAdvertisingForm.getName());
-//        List<AdvertisingControlVo> advertisingControlVos = advertisingControlMapper.selectControlList(query);
-//        for (AdvertisingControlVo advertisingControlVo : advertisingControlVos) {
-//            if (advertisingControlVo.getChannel().contains(updateAdvertisingForm.getChannel())){
-//                //说明有重复数据
-//                throw new ServiceException("修改失败，存在渠道相同的数据");
-//            }
-//        }
             return advertisingControlMapper.updateControlList(updateAdvertisingForm);
     }
 
