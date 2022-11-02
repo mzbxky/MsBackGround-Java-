@@ -4,10 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.dao.PlatformMapper">
     <select id="selectPlatformName" resultType="java.lang.String">
-        select name from ms_platform
+        select name from cms_platform
     </select>
     <select id="selectPlatformList" resultType="com.ruoyi.vo.PlatformVo">
-        select * from ms_platform
+        select * from cms_platform
         <where>
             <if test="platformQuery.id != null and platformQuery.id != ''">
                 and id = #{platformQuery.id}
@@ -24,14 +24,14 @@
         </where>
     </select>
     <delete id="deleteMany" parameterType="Long">
-        delete ms_platform.* from ms_platform
-        where ms_platform.id in
+        delete cms_platform.* from cms_platform
+        where cms_platform.id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
     <update id="updateInfo">
-        update ms_platform msp
+        update cms_platform msp
         <set>
             msp.name = #{updatePlatformForm.name},
             msp.company = #{updatePlatformForm.company},
@@ -42,7 +42,7 @@
     </update>
 
     <insert id="insertInfo">
-        insert into ms_platform (id, name, company, secret, alias) VALUES (
+        insert into cms_platform (id, name, company, secret, alias) VALUES (
         #{updatePlatformForm.id},#{updatePlatformForm.name},#{updatePlatformForm.company},#{updatePlatformForm.secret},#{updatePlatformForm.alias}
                                                                           )
     </insert>

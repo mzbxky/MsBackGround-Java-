@@ -13,18 +13,18 @@
         <result column="name" property="name"/>
     </resultMap>
     <select id="nameList" resultMap="nameMap">
-        select ms_app.name from ms_app where uid = #{user_id}
+        select cms_app.name from cms_app where uid = #{user_id}
     </select>
     <select id="oneByMany" resultMap="selectOneByMany">
-        select sys_user.user_id,sys_user.user_name from sys_user
+        select cms_sys_user.user_id,cms_sys_user.user_name from cms_sys_user
     </select>
 <!--    查询列表-->
     <select id="selectControlList" resultType="com.ruoyi.domain.vo.AdvertisingControlVo">
         select ads.id,ads.pck,ads.version,ads.state,ads.confirm,adc.alt,ads.ctime,ads.name,ads.channel
-        from ad_state ads
-        left join ad_channel adc on ads.channel = adc.name
-        left join ms_app ma on ma.exp = ads.name
-        left join sys_user su on ma.uid = su.user_id
+        from cms_ad_state ads
+        left join cms_ad_channel adc on ads.channel = adc.name
+        left join cms_app ma on ma.exp = ads.name
+        left join cms_sys_user su on ma.uid = su.user_id
         where ads.id is not null
         <if test="query.pck != null and query.pck !=''">
             and ads.pck like concat('%',#{query.pck},'%')
@@ -56,7 +56,7 @@
     </select>
 <!--   修改 -->
     <update id="updateControlList">
-    update ad_state ads left join ad_channel adc on ads.channel = adc.name
+    update cms_ad_state ads left join cms_ad_channel adc on ads.channel = adc.name
     <set>
             ads.version = #{updateAdvertisingForm.version},
             ads.channel = #{updateAdvertisingForm.channel},
@@ -69,7 +69,7 @@
 <!--    删除-->
     <delete id="deleteControlInfo" parameterType="String">
         delete ads.*
-        from ad_state ads
+        from cms_ad_state ads
         where ads.id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
@@ -77,7 +77,7 @@
     </delete>
 <!--    广告开关状态-->
     <update id="changeType" parameterType="String">
-        update ad_state set state = (case state when 0 then 1 when 1 then 0 else 1 end )
+        update cms_ad_state set state = (case state when 0 then 1 when 1 then 0 else 1 end )
         where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
@@ -85,7 +85,7 @@
     </update>
 <!--    二次确认-->
     <update id="changeSecondConfirm" parameterType="String">
-        update ad_state set confirm = (case confirm when 0 then 1 when 1 then 0 else 1 end )
+        update cms_ad_state set confirm = (case confirm when 0 then 1 when 1 then 0 else 1 end )
         where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
@@ -93,7 +93,7 @@
     </update>
 <!--    插入-->
     <insert id="insert" parameterType="java.util.List" >
-            insert into ad_state
+            insert into cms_ad_state
         (       id,
                 name,
                 pck,
@@ -110,19 +110,19 @@
     </insert>
 <!--    插入渠道-->
     <insert id="insertChannel" parameterType="com.ruoyi.form.InsertChannelForm">
-        insert into ad_channel (id, name, alt) VALUES (#{insertChannelForm.id},#{insertChannelForm.name},#{insertChannelForm.alt})
+        insert into cms_ad_channel (id, name, alt) VALUES (#{insertChannelForm.id},#{insertChannelForm.name},#{insertChannelForm.alt})
     </insert>
 <!--    根据所属用户查询媒体-->
     <select id="selectMediaByUser" resultType="com.ruoyi.vo.MediaByUserVo" parameterType="String">
-        select ms_app.name,ms_app.exp,ms_app.pkg from ms_app
+        select cms_app.name,cms_app.exp,cms_app.pkg from cms_app
         <where>
             <if test="userName != 'null' and userName != '' and userName != 0">
-                and ms_app.uid = #{userName}
+                and cms_app.uid = #{userName}
             </if>
         </where>
     </select>
 <!--    查询渠道-->
     <select id="selectChannel" resultType="com.ruoyi.domain.vo.ChannelVo">
-        select ad_channel.name,ad_channel.alt from ad_channel
+        select cms_ad_channel.name,cms_ad_channel.alt from cms_ad_channel
     </select>
 </mapper>

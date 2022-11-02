@@ -8,8 +8,8 @@
     <select id="AnyAppOneDateDataCSJ" resultType="com.ruoyi.vo.AnyAppOneDateDataVo">
         select SUM(csj.revenue)*app.rate/100 as cincome,app.id as aid,csj.date as date,
                app.uid as uid,app.state
-        from ms_app app
-                 left join ms_csj_data_day csj on cid = csj.appid
+        from cms_app app
+                 left join cms_csj_data_day csj on cid = csj.appid
         where csj.date = #{date}
         group by csj.date,app.name
     </select>
@@ -17,15 +17,15 @@
     <select id="AnyAppOneDateDataYLH" resultType="com.ruoyi.vo.AnyAppOneDateDataVo">
         select SUM(ylh.revenue)*app.rate/100 as tincome,app.id as aid,ylh.date as date,
                app.uid as uid,app.state
-        from ms_app app
-                 left join ms_ylh_data_day ylh on app.tid = ylh.app_id
+        from cms_app app
+                 left join cms_ylh_data_day ylh on app.tid = ylh.app_id
         where ylh.date = #{date}
         group by ylh.date,app.name
     </select>
 
 <!--    整合到adata_bus表中-->
     <insert id="insertIntoBus">
-        insert into moshang.ms_adata_bus(time, aid, uid, cincome, tincome,state) VALUES
+        insert into cms_adata_bus(time, aid, uid, cincome, tincome,state) VALUES
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
             (#{item.date},#{item.aid},#{item.uid},#{item.cincome},#{item.tincome},#{item.state})
         </foreach>
@@ -33,13 +33,13 @@
     </insert>
 <!--整合到sum表中-->
     <select id="selectAnyUser" resultType="com.ruoyi.vo.AnyUserAnyDateVo">
-        select SUM(cincome) as cincome,SUM(tincome) as tincome,uid,time,ms_adata_bus.state as state
-        from ms_adata_bus
-        where ms_adata_bus.time = #{date}
-        GROUP BY ms_adata_bus.time,ms_adata_bus.uid
+        select SUM(cincome) as cincome,SUM(tincome) as tincome,uid,time,cms_adata_bus.state as state
+        from cms_adata_bus
+        where cms_adata_bus.time = #{date}
+        GROUP BY cms_adata_bus.time,cms_adata_bus.uid
     </select>
     <insert id="insertIntoSum">
-        insert into moshang.ms_adata_sum(time, uid, cincome, tincome, state) VALUES
+        insert into cms_adata_sum(time, uid, cincome, tincome, state) VALUES
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
             (#{item.time},#{item.uid},#{item.cincome},#{item.tincome},#{item.state})
         </foreach>
@@ -47,9 +47,9 @@
 <!--    页面展示 -->
     <select id="pageShow" resultType="com.ruoyi.vo.SummaryShowVo">
         select bus.cincome as cincome,bus.tincome as tincome,bus.time as time,user.nick_name as nickName,app.name as appName,app.pkg as pkg,bus.tincome+bus.cincome as total
-        from ms_adata_bus bus
-        left join ms_app app on bus.aid = app.id
-        left join sys_user user on user.user_id = bus.uid
+        from cms_adata_bus bus
+        left join cms_app app on bus.aid = app.id
+        left join cms_sys_user user on user.user_id = bus.uid
         where 1=1
         <if test="summaryQuery.userId != null and summaryQuery.userId != ''">
            and bus.uid = #{summaryQuery.userId}
@@ -70,8 +70,8 @@
     </select>
 <!--    页面展示(用户)-->
     <select id="pageShowUser" resultType="com.ruoyi.vo.SummaryShowVo">
-        select sum.cincome as cincome,sum.tincome as tincome,sum.time as time,user.nick_name as nickName,sum.tincome+sum.cincome as total from ms_adata_sum sum
-        left join sys_user user on user.user_id = sum.uid
+        select sum.cincome as cincome,sum.tincome as tincome,sum.time as time,user.nick_name as nickName,sum.tincome+sum.cincome as total from cms_adata_sum sum
+        left join cms_sys_user user on user.user_id = sum.uid
         where 1=1
         <if test="summaryQuery.userId != null and summaryQuery.userId != ''">
           and  sum.uid = #{summaryQuery.userId}
