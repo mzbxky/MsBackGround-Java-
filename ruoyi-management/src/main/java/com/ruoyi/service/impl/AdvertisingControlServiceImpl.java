@@ -27,6 +27,7 @@ import java.util.List;
 public class AdvertisingControlServiceImpl implements AdvertisingControlService {
     @Autowired
     private AdvertisingControlMapper advertisingControlMapper;
+
     @Override
     public PageInfo<AdvertisingControlVo> selectControlList(AdvertisingControlQuery query) {
         PageHelper.startPage(query.getPageNum(),query.getPageSize());
@@ -71,11 +72,7 @@ public class AdvertisingControlServiceImpl implements AdvertisingControlService 
                 InsertIntoControlForm insertChannelForm = new InsertIntoControlForm();
                 BeanUtils.copyProperties(insert, insertChannelForm);
                 insertChannelForm.setId(UUID.randomUUID().toString().replace("-", "").replace(" ", ""));
-                if (chaSplit.length > 0) {
-                    insertChannelForm.setChannel(s1);
-                } else {
-                    insertChannelForm.setChannel("1");
-                }
+                insertChannelForm.setChannel(s1);
                 //设置插入时间
                 //
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

@@ -65,7 +65,7 @@
                round(AVG(cast(LEFT(msday.click_rate,LENGTH(msday.click_rate)-1) as float)),2) as click_rate,
                round(AVG(cast(LEFT(msday.ad_exposure_rate,LENGTH(msday.ad_exposure_rate)-1) as float)),2) as ad_exposure_rate,
                SUM(msday.revenue) as revenue,SUM(msday.ecpm) as ecpm
-                from ms_ylh_data_day msday
+               from ms_ylh_data_day msday
         where medium_name != ''
         <if test="dayDataListQuery.mediaName != null and dayDataListQuery.mediaName != ''">
             and msday.medium_name like concat('%',#{dayDataListQuery.mediaName},'%')
@@ -103,6 +103,5 @@
             </if>
         </where>
         group by placement_name
-
     </select>
 </mapper>

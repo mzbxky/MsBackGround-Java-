@@ -55,12 +55,6 @@
         </if>
     </select>
 <!--   修改 -->
-<!--            <if test="updateAdvertisingForm.name!=null and updateAdvertisingForm.name!=''">
-            ads.name = #{updateAdvertisingForm.name},
-        </if>
-        <if test="updateAdvertisingForm.pck!=null and updateAdvertisingForm.pck!=''">
-            ads.pck = #{updateAdvertisingForm.pck},
-        </if>-->
     <update id="updateControlList">
     update ad_state ads left join ad_channel adc on ads.channel = adc.name
     <set>
@@ -128,7 +122,6 @@
         </where>
     </select>
 <!--    查询渠道-->
-<!--  -->
     <select id="selectChannel" resultType="com.ruoyi.domain.vo.ChannelVo">
         select ad_channel.name,ad_channel.alt from ad_channel
     </select>

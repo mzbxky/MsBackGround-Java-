@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
@@ -48,13 +49,9 @@ public class MsPlatformServiceImpl implements MsPlatformService {
     @Override
     public ResultVo updateInfo(UpdatePlatformForm updatePlatformForm) {
 //        updatePlatformForm.setSecret(SecurityUtils.encryptPassword(updatePlatformForm.getSecret()));
-        try {
-            String a = Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes("utf-8"));
-            updatePlatformForm.setSecret(Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes("utf-8")));
+        String a = Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes(StandardCharsets.UTF_8));
+        updatePlatformForm.setSecret(Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes(StandardCharsets.UTF_8)));
 //            System.out.println("解密"+new String(Base64.getDecoder().decode(a)));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
         int affectedRows = platformMapper.updateInfo(updatePlatformForm);
         ResultVo resultVo = new ResultVo();
         resultVo.setCode(-1);
