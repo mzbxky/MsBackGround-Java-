@@ -54,9 +54,8 @@ public class PangolinDataReportController {
     public List<String> selectSlotName(String appName,Long codeBit){
         return pangolinDataService.selectSlotName(appName,codeBit);
     }
-
-    @GetMapping("selectCodeBit")
     //查询代码位
+    @GetMapping("selectCodeBit")
     public List<Long> selectCodeBit(String appName){
         return pangolinDataService.selectCodeBit(appName);
     }

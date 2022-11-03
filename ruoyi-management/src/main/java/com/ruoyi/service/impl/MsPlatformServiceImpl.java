@@ -48,10 +48,9 @@ public class MsPlatformServiceImpl implements MsPlatformService {
 
     @Override
     public ResultVo updateInfo(UpdatePlatformForm updatePlatformForm) {
-//        updatePlatformForm.setSecret(SecurityUtils.encryptPassword(updatePlatformForm.getSecret()));
-        String a = Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes(StandardCharsets.UTF_8));
+        //String a = Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes(StandardCharsets.UTF_8));
+        //System.out.println("解密"+new String(Base64.getDecoder().decode(a)));
         updatePlatformForm.setSecret(Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes(StandardCharsets.UTF_8)));
-//            System.out.println("解密"+new String(Base64.getDecoder().decode(a)));
         int affectedRows = platformMapper.updateInfo(updatePlatformForm);
         ResultVo resultVo = new ResultVo();
         resultVo.setCode(-1);
