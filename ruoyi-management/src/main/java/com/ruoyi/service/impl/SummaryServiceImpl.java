@@ -19,6 +19,7 @@ import java.util.List;
 public class SummaryServiceImpl implements SummaryService {
     @Autowired
     private SummaryMapper summaryMapper;
+
     @Override
     public void insertIntoBus(){
         LocalDate localDate = LocalDate.now().minusDays(1);

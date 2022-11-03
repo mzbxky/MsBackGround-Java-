@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.dao.SummaryMapper">
 
-<!--    每个应用每天一条数据(穿山甲) -->
+    <!--每个应用每天一条数据(穿山甲)-->
     <select id="AnyAppOneDateDataCSJ" resultType="com.ruoyi.vo.AnyAppOneDateDataVo">
         select SUM(csj.revenue)*app.rate/100 as cincome,app.id as aid,csj.date as date,
                app.uid as uid,app.state
@@ -13,7 +13,7 @@
         where csj.date = #{date}
         group by csj.date,app.name
     </select>
-    <!--    每个应用每天一条数据(优量汇) -->
+    <!--每个应用每天一条数据(优量汇)-->
     <select id="AnyAppOneDateDataYLH" resultType="com.ruoyi.vo.AnyAppOneDateDataVo">
         select SUM(ylh.revenue)*app.rate/100 as tincome,app.id as aid,ylh.date as date,
                app.uid as uid,app.state
@@ -23,7 +23,7 @@
         group by ylh.date,app.name
     </select>
 
-<!--    整合到adata_bus表中-->
+    <!--整合到adata_bus表中-->
     <insert id="insertIntoBus">
         insert into cms_adata_bus(time, aid, uid, cincome, tincome,state) VALUES
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
@@ -31,7 +31,7 @@
         </foreach>
         ON DUPLICATE KEY UPDATE tincome = values(tincome)
     </insert>
-<!--整合到sum表中-->
+    <!--整合到sum表中-->
     <select id="selectAnyUser" resultType="com.ruoyi.vo.AnyUserAnyDateVo">
         select SUM(cincome) as cincome,SUM(tincome) as tincome,uid,time,cms_adata_bus.state as state
         from cms_adata_bus
@@ -44,7 +44,7 @@
             (#{item.time},#{item.uid},#{item.cincome},#{item.tincome},#{item.state})
         </foreach>
     </insert>
-<!--    页面展示 -->
+    <!--页面展示-->
     <select id="pageShow" resultType="com.ruoyi.vo.SummaryShowVo">
         select bus.cincome as cincome,bus.tincome as tincome,bus.time as time,user.nick_name as nickName,app.name as appName,app.pkg as pkg,bus.tincome+bus.cincome as total
         from cms_adata_bus bus
@@ -68,7 +68,7 @@
         </if>
         order by bus.time desc
     </select>
-<!--    页面展示(用户)-->
+    <!--页面展示(用户)-->
     <select id="pageShowUser" resultType="com.ruoyi.vo.SummaryShowVo">
         select sum.cincome as cincome,sum.tincome as tincome,sum.time as time,user.nick_name as nickName,sum.tincome+sum.cincome as total from cms_adata_sum sum
         left join cms_sys_user user on user.user_id = sum.uid

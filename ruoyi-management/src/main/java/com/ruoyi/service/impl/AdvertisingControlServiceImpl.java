@@ -44,7 +44,7 @@ public class AdvertisingControlServiceImpl implements AdvertisingControlService 
         Date date = new Date();
         String dateToStr = dateFormat.format(date);
         updateAdvertisingForm.setCtime(dateToStr);
-            return advertisingControlMapper.updateControlList(updateAdvertisingForm);
+        return advertisingControlMapper.updateControlList(updateAdvertisingForm);
     }
 
     @Override
@@ -74,7 +74,6 @@ public class AdvertisingControlServiceImpl implements AdvertisingControlService 
                 insertChannelForm.setId(UUID.randomUUID().toString().replace("-", "").replace(" ", ""));
                 insertChannelForm.setChannel(s1);
                 //设置插入时间
-                //
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Date date = new Date();
                 String dateToStr = dateFormat.format(date);
@@ -111,7 +110,7 @@ public class AdvertisingControlServiceImpl implements AdvertisingControlService 
     public Integer insertChannel(InsertChannelForm insertChannelForm) {
         return advertisingControlMapper.insertChannel(insertChannelForm);
     }
-    //
+
     @Override
     public void secondConfirm(String[] changeSecondConfirm) {
         advertisingControlMapper.changeSecondConfirm(changeSecondConfirm);

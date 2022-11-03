@@ -18,7 +18,7 @@
     <select id="oneByMany" resultMap="selectOneByMany">
         select cms_sys_user.user_id,cms_sys_user.user_name from cms_sys_user
     </select>
-<!--    查询列表-->
+    <!--查询列表-->
     <select id="selectControlList" resultType="com.ruoyi.domain.vo.AdvertisingControlVo">
         select ads.id,ads.pck,ads.version,ads.state,ads.confirm,adc.alt,ads.ctime,ads.name,ads.channel
         from cms_ad_state ads
@@ -54,19 +54,19 @@
             and su.user_id = #{query.userName}
         </if>
     </select>
-<!--   修改 -->
+    <!--修改-->
     <update id="updateControlList">
-    update cms_ad_state ads left join cms_ad_channel adc on ads.channel = adc.name
-    <set>
+        update cms_ad_state ads left join cms_ad_channel adc on ads.channel = adc.name
+        <set>
             ads.version = #{updateAdvertisingForm.version},
             ads.channel = #{updateAdvertisingForm.channel},
             ads.ctime = #{updateAdvertisingForm.ctime},
-    </set>
+        </set>
         <where>
             ads.id = #{updateAdvertisingForm.id}
         </where>
     </update>
-<!--    删除-->
+    <!--删除-->
     <delete id="deleteControlInfo" parameterType="String">
         delete ads.*
         from cms_ad_state ads
@@ -75,7 +75,7 @@
             #{id}
         </foreach>
     </delete>
-<!--    广告开关状态-->
+    <!--广告开关状态-->
     <update id="changeType" parameterType="String">
         update cms_ad_state set state = (case state when 0 then 1 when 1 then 0 else 1 end )
         where id in
@@ -83,7 +83,7 @@
             #{id}
         </foreach>
     </update>
-<!--    二次确认-->
+    <!--二次确认-->
     <update id="changeSecondConfirm" parameterType="String">
         update cms_ad_state set confirm = (case confirm when 0 then 1 when 1 then 0 else 1 end )
         where id in
@@ -91,7 +91,7 @@
             #{id}
         </foreach>
     </update>
-<!--    插入-->
+    <!--插入-->
     <insert id="insert" parameterType="java.util.List" >
             insert into cms_ad_state
         (       id,
@@ -108,11 +108,11 @@
             (#{item.id},#{item.name},#{item.pck},#{item.version},#{item.state},#{item.ctime},#{item.confirm},#{item.channel})
         </foreach>
     </insert>
-<!--    插入渠道-->
+    <!--插入渠道-->
     <insert id="insertChannel" parameterType="com.ruoyi.form.InsertChannelForm">
         insert into cms_ad_channel (id, name, alt) VALUES (#{insertChannelForm.id},#{insertChannelForm.name},#{insertChannelForm.alt})
     </insert>
-<!--    根据所属用户查询媒体-->
+    <!--根据所属用户查询媒体-->
     <select id="selectMediaByUser" resultType="com.ruoyi.vo.MediaByUserVo" parameterType="String">
         select cms_app.name,cms_app.exp,cms_app.pkg from cms_app
         <where>
@@ -121,7 +121,7 @@
             </if>
         </where>
     </select>
-<!--    查询渠道-->
+    <!--查询渠道-->
     <select id="selectChannel" resultType="com.ruoyi.domain.vo.ChannelVo">
         select cms_ad_channel.name,cms_ad_channel.alt from cms_ad_channel
     </select>

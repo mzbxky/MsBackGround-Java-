@@ -49,7 +49,7 @@
             </if>
         </set>
         <where>
-                 msa.id = #{updateMediaManagementForm.id}
+            msa.id = #{updateMediaManagementForm.id}
         </where>
     </update>
     <delete id="deleteInfo" parameterType="String">

@@ -43,7 +43,6 @@
 
     <insert id="insertInfo">
         insert into cms_platform (id, name, company, secret, alias) VALUES (
-        #{updatePlatformForm.id},#{updatePlatformForm.name},#{updatePlatformForm.company},#{updatePlatformForm.secret},#{updatePlatformForm.alias}
-                                                                          )
+        #{updatePlatformForm.id},#{updatePlatformForm.name},#{updatePlatformForm.company},#{updatePlatformForm.secret},#{updatePlatformForm.alias})
     </insert>
 </mapper>

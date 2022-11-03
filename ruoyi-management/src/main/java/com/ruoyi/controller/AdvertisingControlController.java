@@ -30,29 +30,30 @@ import java.util.List;
 public class AdvertisingControlController {
     @Autowired
     private AdvertisingControlService advertisingControlService;
+
     @GetMapping("/selectControlList")
     @ResponseBody
     @ApiOperation(value = "获取广告管理列表" ,notes = "获取广告管理列表")
     @ApiImplicitParam(paramType="body",name="query",value="广告列表查询参数",required=true,dataType="AdvertisingControlQuery",dataTypeClass=AdvertisingControlQuery.class)
     public PageInfo<AdvertisingControlVo> selectControlList(AdvertisingControlQuery query){
-        PageInfo<AdvertisingControlVo> advertisingControlVos = advertisingControlService.selectControlList(query);
-        return advertisingControlVos;
+        return advertisingControlService.selectControlList(query);
     }
+
     @Transactional
     @GetMapping("updateControlList")
     @ApiOperation(value = "修改广告广告信息" ,notes = "修改广告广告信息")
     @ApiImplicitParam(paramType="body",name="updateAdvertisingForm",value="广告信息修改",required=true,dataType="UpdateAdvertisingForm",dataTypeClass=UpdateAdvertisingForm.class)
     public Integer updateControlList(UpdateAdvertisingForm updateAdvertisingForm){
-        Integer affectedRows = advertisingControlService.updateControlList(updateAdvertisingForm);
-        return affectedRows;
+        return advertisingControlService.updateControlList(updateAdvertisingForm);
     }
+
     @PutMapping("deleteControlInfo/{deleteId}")
     @ApiOperation(value = "广告信息删除" ,notes = "广告信息删除")
     @ApiImplicitParam(paramType="body",name="deleteId",value="广告信息删除",required=true,dataType="String[]",dataTypeClass=String.class)
     public Integer deleteControlInfo(@PathVariable String[] deleteId){
-        Integer affectedRows = advertisingControlService.deleteControlInfo(deleteId);
-        return affectedRows;
+        return advertisingControlService.deleteControlInfo(deleteId);
     }
+
     @Transactional
     @PutMapping("changeType/{changeId}")
     @ApiOperation(value = "广告开关" ,notes = "广告开关")
@@ -60,6 +61,7 @@ public class AdvertisingControlController {
     public void changeType(@PathVariable String[] changeId){
         advertisingControlService.changeType(changeId);
     }
+
     //二次确认
     @Transactional
     @PutMapping("changeSecondConfirm/{changeSecondConfirm}")
@@ -68,34 +70,35 @@ public class AdvertisingControlController {
     public void secondConfirm(@PathVariable String[] changeSecondConfirm){
         advertisingControlService.secondConfirm(changeSecondConfirm);
     }
+
     @GetMapping ("insert")
     @ApiOperation(value = "广告信息添加" ,notes = "广告信息添加")
     @ApiImplicitParam(paramType="body",name="insert",value="广告信息添加",required=true,dataType="InsertIntoControlForm",dataTypeClass=InsertIntoControlForm.class)
     public Integer insert(InsertIntoControlForm insert) {
-        Integer affectedRows = advertisingControlService.insert(insert);
-        return affectedRows;
+        return advertisingControlService.insert(insert);
     }
+
     @GetMapping("insertChannel")
     public Integer insertChannel(InsertChannelForm insertChannelForm){
-        Integer affectedRows = advertisingControlService.insertChannel(insertChannelForm);
-        return affectedRows;
+        return advertisingControlService.insertChannel(insertChannelForm);
     }
+
     //根据用户查询所属媒体
     @GetMapping("selectMediaByUser")
     @ApiOperation(value = "根据用户查询所属媒体" ,notes = "根据用户查询所属媒体")
     @ApiImplicitParam(paramType="query",name="userName",value="根据用户查询所属媒体",required=true,dataType="String",dataTypeClass=String.class)
     public List<MediaByUserVo> selectMediaByUser(String userName){
-        List<MediaByUserVo> list = advertisingControlService.selectMediaByUser(userName);
-        return list;
+        return advertisingControlService.selectMediaByUser(userName);
     }
+
     //查询渠道
     @GetMapping("selectChannel")
     public List<ChannelVo> selectChannel(){
-        List<ChannelVo> list = advertisingControlService.selectChannel();
-        return list;
+        return advertisingControlService.selectChannel();
     }
+
     @Log(title = "广告控制管理", businessType = BusinessType.EXPORT)
-//    @PreAuthorize("@ss.hasPermi('management:export')")
+    //@PreAuthorize("@ss.hasPermi('management:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, AdvertisingControlQuery query) {
         List<AdvertisingControlVo> list =  advertisingControlService.selectDownLoadList(query);

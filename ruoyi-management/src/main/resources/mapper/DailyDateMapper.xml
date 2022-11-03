@@ -3,6 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.dao.DailyDateMapper">
+
     <insert id="insertDayList">
         insert into cms_ylh_data_day(
         id, member_id, app_id, medium_name, placement_id, placement_name, date, ad_request_count, ad_return_count, pv, click, ad_fill_rate, ad_exposure_rate, click_rate, revenue, ecpm
@@ -11,17 +12,16 @@
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
             (#{item.id},#{item.member_id},#{item.app_id},#{item.medium_name},#{item.placement_id},
              #{item.placement_name},#{item.date},#{item.ad_request_count},
-            #{item.ad_return_count},#{item.pv},#{item.click},#{item.ad_fill_rate},#{item.ad_exposure_rate},
-            #{item.click_rate},#{item.revenue},#{item.ecpm})
+             #{item.ad_return_count},#{item.pv},#{item.click},#{item.ad_fill_rate},#{item.ad_exposure_rate},
+             #{item.click_rate},#{item.revenue},#{item.ecpm})
         </foreach>
         ON DUPLICATE KEY UPDATE date = values(date),ad_request_count = values(ad_request_count),ad_return_count = values(ad_return_count),
                                 pv = values(pv),click = values(click),ad_fill_rate = values(ad_fill_rate),ad_exposure_rate = values(ad_exposure_rate),
                                 click_rate = values(click_rate),revenue = values(revenue),ecpm = values(ecpm)
     </insert>
+
     <insert id="insertHourList">
-        insert into cms_ylh_data_day(
-        id, app_id, medium_name, placement_id, placement_name, revenue, ecpm, pv, click, click_rate
-        )
+        insert into cms_ylh_data_day(id, app_id, medium_name, placement_id, placement_name, revenue, ecpm, pv, click, click_rate)
         values
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
             (#{item.id},#{item.app_id},#{item.medium_name},#{item.placement_id},
@@ -29,14 +29,15 @@
             #{item.pv},#{item.click},#{item.click_rate})
         </foreach>
     </insert>
+
     <select id="selectDayData" resultType="com.ruoyi.vo.DayDataListVo">
         select msday.id, msday.medium_name, msday.placement_name, msday.date, cast(msday.ad_request_count as int) as ad_request_count ,
         cast(msday.ad_return_count as int) as ad_return_count ,
         cast(msday.pv as int) as pv , cast(msday.click as int) as click,
-               cast(LEFT(msday.ad_fill_rate,LENGTH(msday.ad_fill_rate)-1) as float) as ad_fill_rate,
-               cast(LEFT(msday.ad_exposure_rate,LENGTH(msday.ad_exposure_rate)-1) as float) as ad_exposure_rate,
-               cast(LEFT(msday.click_rate,LENGTH(msday.click_rate)-1) as float) as click_rate,
-               msday.revenue, msday.ecpm
+        cast(LEFT(msday.ad_fill_rate,LENGTH(msday.ad_fill_rate)-1) as float) as ad_fill_rate,
+        cast(LEFT(msday.ad_exposure_rate,LENGTH(msday.ad_exposure_rate)-1) as float) as ad_exposure_rate,
+        cast(LEFT(msday.click_rate,LENGTH(msday.click_rate)-1) as float) as click_rate,
+        msday.revenue, msday.ecpm
         from cms_ylh_data_day msday
         <where>
         <if test="dayDataListQuery.mediaName != null and dayDataListQuery.mediaName != ''">
@@ -55,7 +56,7 @@
         order by msday.date desc
     </select>
 
-<!-- 总览 -->
+    <!--总览-->
     <select id="selectOverview" resultType="com.ruoyi.vo.DayDataListVo">
         select msday.medium_name, msday.placement_name, msday.date,
                SUM(cast(msday.ad_request_count as INT)) as ad_request_count,
@@ -89,12 +90,12 @@
         </trim>
         order by msday.date desc
     </select>
-<!--    查询媒体  -->
+    <!--查询媒体-->
     <select id="selectMediaName" resultType="java.lang.String">
         select medium_name from cms_ylh_data_day group by medium_name
     </select>
 
-<!--    查询广告位名称  -->
+    <!--查询广告位名称-->
     <select id="selectPlacementName" resultType="java.lang.String">
         select placement_name from cms_ylh_data_day
         <where>

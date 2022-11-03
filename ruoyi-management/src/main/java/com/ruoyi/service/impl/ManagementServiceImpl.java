@@ -24,6 +24,7 @@ import java.util.UUID;
 public class ManagementServiceImpl implements ManagementService {
     @Autowired
     private ManagementMapper managementMapper;
+
     @Override
     public PageInfo<MediaManagementVo> selectList(ManagementQuery managementQuery) {
         if (managementQuery.getPageNum() == null){

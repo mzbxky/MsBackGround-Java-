@@ -30,16 +30,19 @@ public class DailyDataController {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private SummaryService summaryService;
+
     @GetMapping("dayData")
     @ApiOperation(value = "获取天级数据(三方接口)" ,notes = "获取天级数据")
     @ApiImplicitParam(paramType="body",name="dailyDataQuery",value="获取天级数据",required=true,dataType="DailyDataQuery",dataTypeClass= DailyDataQuery.class)
     public ResultVo dayData(DailyDataQuery dailyDataQuery){
         return dailyDateService.dayData(dailyDataQuery);
     }
+
     @PostMapping("hourData")
     public ResultVo hourData(@RequestBody HourDataQuery hourDataQuery){
         return dailyDateService.hourData(hourDataQuery);
     }
+
     @GetMapping("selectDayDataList")
     @ApiOperation(value = "查询天级数据(码上数据库)" ,notes = "查询天级数据(码上数据库)")
     @ApiImplicitParam(paramType="body",name="dayDataListQuery",value="查询天级数据(码上数据库)",required=true,dataType="DayDataListQuery",dataTypeClass= DayDataListQuery.class)
@@ -47,7 +50,7 @@ public class DailyDataController {
         return dailyDateService.selectDayDataList(dayDataListQuery);
     }
 
-//    查询媒体
+    //查询媒体
     @GetMapping("selectMediaName")
     public List<String> selectMediaName(){
         return dailyDateService.selectMediaName();
@@ -56,11 +59,13 @@ public class DailyDataController {
     public List<String> selectPlacementName(String mediaName){
         return dailyDateService.selectPlacementName(mediaName);
     }
-//    总览
+
+    //总览
     @GetMapping("overview")
     public ResultVo selectOverview(DayDataListQuery dayDataListQuery){
         return dailyDateService.selectOverview(dayDataListQuery);
     }
+
     //定时任务获取第三方数据
     public void pullData(){
         DailyDataQuery dailyDataQuery = new DailyDataQuery();
@@ -74,15 +79,15 @@ public class DailyDataController {
 
     //每天早上八点半执行   0 30 8 ? * 1-7       0 0 8,10,12,14,16,18,20,22 ? * * *
     public void anyMorning(){
-            LocalDate localDate = LocalDate.now().minusDays(1);
-            Integer date = Integer.valueOf(localDate.toString().replace("-","").replace("-",""));
-            DailyDataQuery dailyDataQuery = new DailyDataQuery();
-            dailyDataQuery.setMember_id("800050613231");
-            dailyDataQuery.setStart_date(date);
-            dailyDataQuery.setEnd_date(date);
-            dailyDataQuery.setPage(1);
-            dailyDataQuery.setPage_size(20);
-            dailyDateService.dayData(dailyDataQuery);
+        LocalDate localDate = LocalDate.now().minusDays(1);
+        Integer date = Integer.valueOf(localDate.toString().replace("-","").replace("-",""));
+        DailyDataQuery dailyDataQuery = new DailyDataQuery();
+        dailyDataQuery.setMember_id("800050613231");
+        dailyDataQuery.setStart_date(date);
+        dailyDataQuery.setEnd_date(date);
+        dailyDataQuery.setPage(1);
+        dailyDataQuery.setPage_size(20);
+        dailyDateService.dayData(dailyDataQuery);
             //判断键是否存在
         Boolean redisKey = stringRedisTemplate.hasKey("YLH");
         if (redisKey){

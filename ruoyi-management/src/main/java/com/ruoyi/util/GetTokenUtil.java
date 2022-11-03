@@ -21,6 +21,7 @@ public class GetTokenUtil {
         }
         return null;
     }
+
     public static String sha1(String data){
         try {
             MessageDigest md = MessageDigest.getInstance("SHA1");
@@ -42,6 +43,7 @@ public class GetTokenUtil {
         }
         return "";
     }
+
     public static String base64(String src){
         byte[] b = null;
         String s = "";
