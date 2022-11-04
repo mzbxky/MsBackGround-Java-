@@ -5,7 +5,7 @@
 <mapper namespace="com.ruoyi.dao.PangolinDataMapper">
 
     <insert id="insertPangolinService">
-        insert into cms_csj_data_day(
+        insert into ms_csj_data_day(
             id, appid, appname, slotid, package_name, reqcount, retcount, pv, click, clickrate, revenue, ecpm, mediation,slotname,date
         ) VALUES
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
@@ -21,7 +21,7 @@
     <!--查询 -->
     <select id="selectPangolinData" resultType="com.ruoyi.vo.DataReportSecondVo">
         select date,ecpm,revenue,clickrate as click_rate,click,reqcount as request,retcount as response,appname as app_name,slotname as slot_name
-        from cms_csj_data_day
+        from ms_csj_data_day
         <where>
             <if test="reportDataForMySqlQuery.appName != null and reportDataForMySqlQuery.appName != ''">
                 and appname like concat('%',#{reportDataForMySqlQuery.appName},'%')
@@ -57,7 +57,7 @@
     <select id="sumList" resultType="com.ruoyi.vo.DataReportSecondVo">
         select date,round(avg(ecpm),2) as ecpm,round(SUM(revenue),2) as revenue,round(avg(clickrate),2) as click_rate,sum(click) as click,SUM(reqcount) as request,SUM(retcount) as response,slotid as ad_slot_id,appname as app_name,
                slotname as slot_name,sum(pv) as 'show'
-        from cms_csj_data_day
+        from ms_csj_data_day
         <where>
             <if test="reportDataForMySqlQuery.appName != null and reportDataForMySqlQuery.appName != ''">
                 and appname like concat('%',#{reportDataForMySqlQuery.appName},'%')
@@ -82,15 +82,15 @@
 
     <!--查询应用名称-->
     <select id="selectAppName" resultType="java.lang.String">
-        select appname from cms_csj_data_day group by appname
+        select appname from ms_csj_data_day group by appname
     </select>
     <!--查询代码位-->
     <select id="selectCodeBit" resultType="java.lang.Long">
-        select slotid from cms_csj_data_day where appname = #{appName} group by slotid
+        select slotid from ms_csj_data_day where appname = #{appName} group by slotid
     </select>
     <!--查询广告位名称-->
     <select id="selectSlotName" resultType="java.lang.String">
-        select slotname from cms_csj_data_day
+        select slotname from ms_csj_data_day
         <where>
             <if test="appName != null and appName != ''">
                 appname = #{appName}

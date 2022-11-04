@@ -5,7 +5,7 @@
 <mapper namespace="com.ruoyi.dao.DailyDateMapper">
 
     <insert id="insertDayList">
-        insert into cms_ylh_data_day(
+        insert into ms_ylh_data_day(
         id, member_id, app_id, medium_name, placement_id, placement_name, date, ad_request_count, ad_return_count, pv, click, ad_fill_rate, ad_exposure_rate, click_rate, revenue, ecpm
         )
         values
@@ -21,7 +21,7 @@
     </insert>
 
     <insert id="insertHourList">
-        insert into cms_ylh_data_day(id, app_id, medium_name, placement_id, placement_name, revenue, ecpm, pv, click, click_rate)
+        insert into ms_ylh_data_day(id, app_id, medium_name, placement_id, placement_name, revenue, ecpm, pv, click, click_rate)
         values
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
             (#{item.id},#{item.app_id},#{item.medium_name},#{item.placement_id},
@@ -38,7 +38,7 @@
         cast(LEFT(msday.ad_exposure_rate,LENGTH(msday.ad_exposure_rate)-1) as float) as ad_exposure_rate,
         cast(LEFT(msday.click_rate,LENGTH(msday.click_rate)-1) as float) as click_rate,
         msday.revenue, msday.ecpm
-        from cms_ylh_data_day msday
+        from ms_ylh_data_day msday
         <where>
         <if test="dayDataListQuery.mediaName != null and dayDataListQuery.mediaName != ''">
             and msday.medium_name like concat('%',#{dayDataListQuery.mediaName},'%')
@@ -66,7 +66,7 @@
                round(AVG(cast(LEFT(msday.click_rate,LENGTH(msday.click_rate)-1) as float)),2) as click_rate,
                round(AVG(cast(LEFT(msday.ad_exposure_rate,LENGTH(msday.ad_exposure_rate)-1) as float)),2) as ad_exposure_rate,
                SUM(msday.revenue) as revenue,SUM(msday.ecpm) as ecpm
-               from cms_ylh_data_day msday
+               from ms_ylh_data_day msday
         where medium_name != ''
         <if test="dayDataListQuery.mediaName != null and dayDataListQuery.mediaName != ''">
             and msday.medium_name like concat('%',#{dayDataListQuery.mediaName},'%')
@@ -92,12 +92,12 @@
     </select>
     <!--查询媒体-->
     <select id="selectMediaName" resultType="java.lang.String">
-        select medium_name from cms_ylh_data_day group by medium_name
+        select medium_name from ms_ylh_data_day group by medium_name
     </select>
 
     <!--查询广告位名称-->
     <select id="selectPlacementName" resultType="java.lang.String">
-        select placement_name from cms_ylh_data_day
+        select placement_name from ms_ylh_data_day
         <where>
             <if test="mediaName!='null' and mediaName !=''">
                 medium_name = #{mediaName}

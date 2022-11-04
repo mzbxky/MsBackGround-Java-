@@ -35,7 +35,6 @@ public class PangolinDataServiceImpl implements PangolinDataService {
     @Autowired
     private PangolinDataMapper pangolinDataMapper;
 
-
     public final static String URL = "https://open-api.csjplatform.com/union_media/open_api/rt/income";
     //获取sign
     public static String getSign(Map<String, String> request, String token){
@@ -71,20 +70,20 @@ public class PangolinDataServiceImpl implements PangolinDataService {
 
     //为url拼接参数
     private static String getForObject(String url, Object object) {
-        StringBuffer stringBuffer = new StringBuffer(url);
+        StringBuilder stringBuilder = new StringBuilder(url);
         if (object instanceof Map) {
             Iterator iterator = ((Map) object).entrySet().iterator();
             if (iterator.hasNext()) {
-                stringBuffer.append("?");
+                stringBuilder.append("?");
                 Object element;
                 while (iterator.hasNext()) {
                     element = iterator.next();
                     Map.Entry<String, Object> entry = (Map.Entry) element;
                     //过滤value为null，value为null时进行拼接字符串会变成 "null"字符串
                     if (entry.getValue() != null) {
-                        stringBuffer.append(element).append("&");
+                        stringBuilder.append(element).append("&");
                     }
-                    url = stringBuffer.substring(0, stringBuffer.length() - 1);
+                    url = stringBuilder.substring(0, stringBuilder.length() - 1);
                 }
             }
         } else {
@@ -115,8 +114,9 @@ public class PangolinDataServiceImpl implements PangolinDataService {
         param.put("sign",sign);
         //调用方法拼接url并发送请求，将返回值string转为JSON
         JSONObject jsonObject = JSONObject.parseObject(getForObject(URL, param));
-//        JSONObject jsonObject = HttpClientUtil.doGet(URL, param);
-            List o = (List)jsonObject.get(date);
+        //JSONObject jsonObject = HttpClientUtil.doGet(URL, param);
+        JSONObject jsonObject1 = JSONObject.parseObject(jsonObject.get("Data").toString());
+        List o = (List)jsonObject1.get(date);
         List<DataReportSecondVo> dataReportSecondVoList = new ArrayList<>();
         for (Object o1 : o) {
             DataReportSecondVo dataReportSecondVo;

@@ -5,7 +5,7 @@
 <mapper namespace="com.ruoyi.dao.ManagementMapper">
     <select id="selectList" resultType="com.ruoyi.domain.vo.MediaManagementVo">
         select msa.id,msa.name,msa.pkg,msa.utime,msa.state,msa.cid,msa.tid,msa.version,su.nick_name as userName,msa.exp,su.user_id as userId
-        from cms_app msa
+        from ms_app msa
         left join cms_sys_user su on su.user_id = msa.uid
         where msa.id is not null
         <if test="managementQuery.id !=null and managementQuery.id!=''">
@@ -26,9 +26,10 @@
         <if test="managementQuery.exp!=null and managementQuery.exp!=''">
             and msa.exp = #{managementQuery.exp}
         </if>
+        order by msa.utime desc
     </select>
     <update id="updateInfo">
-        update cms_app msa left join cms_sys_user su on msa.uid = su.user_id
+        update ms_app msa left join cms_sys_user su on msa.uid = su.user_id
         <set>
                 msa.name = #{updateMediaManagementForm.name},
                 msa.exp = #{updateMediaManagementForm.exp},
@@ -54,14 +55,14 @@
     </update>
     <delete id="deleteInfo" parameterType="String">
         delete msa.*
-        from cms_app msa
+        from ms_app msa
         where msa.id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
     <insert id="insertInfo">
-        insert into cms_app(
+        insert into ms_app(
                 id,name,pkg,ctime,utime,state,cid,tid,uid,exp)
                 values (
                 #{insertIntoManagementForm.id},#{insertIntoManagementForm.name},
