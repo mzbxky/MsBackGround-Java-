@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.enums.HttpMethod;
 import com.ruoyi.common.utils.uuid.UUID;
 import com.ruoyi.dao.PangolinDataMapper;
 import com.ruoyi.query.ReportDataForMySqlQuery;
@@ -12,8 +13,16 @@ import com.ruoyi.service.PangolinDataService;
 import com.ruoyi.util.HttpClientUtil;
 import com.ruoyi.vo.DataReportSecondVo;
 import com.ruoyi.vo.ResultVo;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -25,6 +34,8 @@ import java.util.Set;
 public class PangolinDataServiceImpl implements PangolinDataService {
     @Autowired
     private PangolinDataMapper pangolinDataMapper;
+
+
     public final static String URL = "https://open-api.csjplatform.com/union_media/open_api/rt/income";
     //获取sign
     public static String getSign(Map<String, String> request, String token){
@@ -57,6 +68,31 @@ public class PangolinDataServiceImpl implements PangolinDataService {
         }
         return md5StrBuilder.toString();
     }
+
+    //为url拼接参数
+    private static String getForObject(String url, Object object) {
+        StringBuffer stringBuffer = new StringBuffer(url);
+        if (object instanceof Map) {
+            Iterator iterator = ((Map) object).entrySet().iterator();
+            if (iterator.hasNext()) {
+                stringBuffer.append("?");
+                Object element;
+                while (iterator.hasNext()) {
+                    element = iterator.next();
+                    Map.Entry<String, Object> entry = (Map.Entry) element;
+                    //过滤value为null，value为null时进行拼接字符串会变成 "null"字符串
+                    if (entry.getValue() != null) {
+                        stringBuffer.append(element).append("&");
+                    }
+                    url = stringBuffer.substring(0, stringBuffer.length() - 1);
+                }
+            }
+        } else {
+            throw new RuntimeException("url请求:" + url + "请求参数有误不是map类型");
+        }
+        return new RestTemplate().getForObject(url, String.class);
+    }
+
     @Override
     public ResultVo getDataReport(DataReportSecondQuery dataReportSecondQuery) {
         String date;
@@ -77,7 +113,9 @@ public class PangolinDataServiceImpl implements PangolinDataService {
         param.put("time_zone","8");
         String sign = getSign(param,"880ab0f2df2e0ba2cc82c9b0c419fc0d");
         param.put("sign",sign);
-        JSONObject jsonObject = HttpClientUtil.doGet(URL, param);
+        //调用方法拼接url并发送请求，将返回值string转为JSON
+        JSONObject jsonObject = JSONObject.parseObject(getForObject(URL, param));
+//        JSONObject jsonObject = HttpClientUtil.doGet(URL, param);
             List o = (List)jsonObject.get(date);
         List<DataReportSecondVo> dataReportSecondVoList = new ArrayList<>();
         for (Object o1 : o) {

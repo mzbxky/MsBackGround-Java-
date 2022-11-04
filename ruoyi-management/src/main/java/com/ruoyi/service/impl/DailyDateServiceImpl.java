@@ -17,6 +17,7 @@ import com.ruoyi.vo.HourVo;
 import com.ruoyi.vo.ResultVo;
 import com.ruoyi.vo.list.DayDataList;
 import com.ruoyi.vo.list.HourDataList;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +71,7 @@ public class DailyDateServiceImpl implements DailyDateService {
         }
         return resultVo;
     }
+
     @Override
     public ResultVo dayData(DailyDataQuery dailyDataQuery) {
         dailyDataQuery.setToken(getToken());

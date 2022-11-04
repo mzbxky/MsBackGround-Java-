@@ -51,9 +51,7 @@ public class HttpClientUtil {
             HttpEntity entity = builder.build();
             //设置请求参数
             httpPost.setEntity(entity);
-            if (paramMap.get("token") != null) {
                 httpPost.setHeader("token", paramMap.get("token"));
-            }
             HttpResponse response = httpClient.execute(httpPost);//执行提交
             //获取返回的状态栏的状态码
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -65,11 +63,7 @@ public class HttpClientUtil {
                 if (status == 0) {
                     JSONObject data;
                     //获取结果
-                    if (datas.get("Data") == null) {
                         data = JSONObject.parseObject(datas.get("data").toString());
-                    } else {
-                        data = JSONObject.parseObject(datas.get("Data").toString());
-                    }
                     //返回的数据就是我需要去解析的
                     return data;
                 }
@@ -97,12 +91,7 @@ public class HttpClientUtil {
                 HttpEntity entity = response.getEntity();
                 String jsonString= EntityUtils.toString(entity, StandardCharsets.UTF_8);
                 JSONObject jsonObject=JSONObject.parseObject(jsonString);
-                JSONObject data ;
-                if (jsonObject.get("Data") == null){
-                    data = JSONObject.parseObject(jsonObject.get("data").toString());
-                }else {
-                    data = JSONObject.parseObject(jsonObject.get("Data").toString());
-                }
+                JSONObject data = JSONObject.parseObject(jsonObject.get("data").toString());
                 return data;
             }
         } catch (Exception e) {
