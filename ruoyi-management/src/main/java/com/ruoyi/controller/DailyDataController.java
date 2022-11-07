@@ -21,7 +21,7 @@ import java.util.List;
 
 @RequestMapping("dataReport")
 @RestController
-@Api("MediaApi")
+@Api(tags = "优量汇数据获取平台")
 @Component("pull")
 public class DailyDataController {
     @Autowired
@@ -44,8 +44,6 @@ public class DailyDataController {
     }
 
     @GetMapping("selectDayDataList")
-    @ApiOperation(value = "查询天级数据(码上数据库)" ,notes = "查询天级数据(码上数据库)")
-    @ApiImplicitParam(paramType="body",name="dayDataListQuery",value="查询天级数据(码上数据库)",required=true,dataType="DayDataListQuery",dataTypeClass= DayDataListQuery.class)
     public ResultVo selectDayDataList(DayDataListQuery dayDataListQuery){
         return dailyDateService.selectDayDataList(dayDataListQuery);
     }
@@ -62,6 +60,8 @@ public class DailyDataController {
 
     //总览
     @GetMapping("overview")
+    @ApiOperation(value = "查询天级数据(码上数据库)" ,notes = "查询天级数据(码上数据库)")
+    @ApiImplicitParam(paramType="body",name="dayDataListQuery",value="查询天级数据(码上数据库)",required=true,dataType="DayDataListQuery",dataTypeClass= DayDataListQuery.class)
     public ResultVo selectOverview(DayDataListQuery dayDataListQuery){
         return dailyDateService.selectOverview(dayDataListQuery);
     }
@@ -92,6 +92,12 @@ public class DailyDataController {
         Boolean redisKey = stringRedisTemplate.hasKey("YLH");
         if (redisKey){
             stringRedisTemplate.opsForValue().increment("YLH",1);
+            int s = Integer.parseInt(stringRedisTemplate.opsForValue().get("YLH"));
+            if (s>3){
+                stringRedisTemplate.delete("YLH");
+                stringRedisTemplate.delete("CSJ");
+                stringRedisTemplate.opsForValue().set("YLH","1");
+            }
             if(stringRedisTemplate.opsForValue().get("YLH").equals("3")&&stringRedisTemplate.opsForValue().get("CSJ").equals("3")){
                 summaryService.insertIntoBus();
                 stringRedisTemplate.delete("YLH");

@@ -21,13 +21,15 @@ import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * Swagger2的接口配置
- * 
+ *
  * @author ruoyi
  */
 @Configuration
+@EnableSwagger2
 public class SwaggerConfig
 {
     /** 系统基础配置 */
@@ -113,11 +115,11 @@ public class SwaggerConfig
         // 用ApiInfoBuilder进行定制
         return new ApiInfoBuilder()
                 // 设置标题
-                .title("标题：若依管理系统_接口文档")
+                .title("山东码上第三方后台数据接口")
                 // 描述
-                .description("描述：用于管理集团旗下公司的人员信息,具体包括XXX,XXX模块...")
+                .description("山东码上第三方后台数据接口")
                 // 作者信息
-                .contact(new Contact(ruoyiConfig.getName(), null, null))
+                .contact(new Contact("山东码上", "http://www.codedapp.net/", "mashang@qq.com"))
                 // 版本
                 .version("版本号:" + ruoyiConfig.getVersion())
                 .build();

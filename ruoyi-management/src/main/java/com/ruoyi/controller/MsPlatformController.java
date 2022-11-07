@@ -7,6 +7,7 @@ import com.ruoyi.query.SummaryQuery;
 import com.ruoyi.service.MsPlatformService;
 import com.ruoyi.vo.PlatformVo;
 import com.ruoyi.vo.ResultVo;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("platform")
+@Api(tags = "平台信息管理接口")
 public class MsPlatformController {
     @Autowired
     private MsPlatformService platformService;
