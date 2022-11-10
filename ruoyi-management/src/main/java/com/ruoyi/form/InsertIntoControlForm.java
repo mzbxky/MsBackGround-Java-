@@ -20,6 +20,8 @@ public class InsertIntoControlForm {
     private Integer confirm;
     //插入时间
     private String ctime;
+    //修改时间
+    private String utime;
     //媒体名称
     private String mediaName;
 }

@@ -40,4 +40,11 @@ public class SummaryController {
     public ResultVo pageShowUser(SummaryQuery summaryQuery){
         return summaryService.pageShowUser(summaryQuery);
     }
+
+    //首页折线图
+    @GetMapping("indexChart")
+    public ResultVo indexChart(SummaryQuery summaryQuery){
+        return summaryService.indexChart(summaryQuery);
+
+    }
 }

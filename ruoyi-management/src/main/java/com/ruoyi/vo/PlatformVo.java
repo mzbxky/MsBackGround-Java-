@@ -10,4 +10,6 @@ public class PlatformVo {
     private String company;
     private String secret;
     private String alias;
+    //标识
+    private Integer type;
 }

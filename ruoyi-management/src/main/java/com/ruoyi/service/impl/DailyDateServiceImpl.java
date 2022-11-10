@@ -5,16 +5,14 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.utils.uuid.UUID;
 import com.ruoyi.dao.DailyDateMapper;
+import com.ruoyi.dao.PlatformMapper;
 import com.ruoyi.query.DayDataListQuery;
 import com.ruoyi.query.reportAPI.DailyDataQuery;
 import com.ruoyi.query.reportAPI.HourDataQuery;
 import com.ruoyi.service.DailyDateService;
 import com.ruoyi.util.GetTokenUtil;
 import com.ruoyi.util.HttpClientUtil;
-import com.ruoyi.vo.DayDataListVo;
-import com.ruoyi.vo.DayVo;
-import com.ruoyi.vo.HourVo;
-import com.ruoyi.vo.ResultVo;
+import com.ruoyi.vo.*;
 import com.ruoyi.vo.list.DayDataList;
 import com.ruoyi.vo.list.HourDataList;
 import org.junit.Test;
@@ -47,6 +45,8 @@ public class DailyDateServiceImpl implements DailyDateService {
     @Autowired
     private DailyDateMapper dailyDateMapper;
 
+    @Autowired
+    private PlatformMapper platformMapper;
     public ResultVo getResultVo(Object data,int insert,Class clazz){
         ResultVo resultVo = new ResultVo();
         resultVo.setData(data);
@@ -71,31 +71,55 @@ public class DailyDateServiceImpl implements DailyDateService {
         }
         return resultVo;
     }
+    @Override
+    public void scheduld(DailyDataQuery dailyDataQuery){
+            dailyDataQuery.setToken(getToken());
+            dailyDataQuery.setMember_id(dailyDataQuery.getMember_id());
+            dailyDataQuery.setStart_date(dailyDataQuery.getStart_date());
+            dailyDataQuery.setEnd_date(dailyDataQuery.getEnd_date());
+            JSONObject jsonObject = HttpClientUtil.doGet(URL+"get", HttpClientUtil.getObject(dailyDataQuery));
+            DayVo data = JSONObject.toJavaObject(jsonObject, DayVo.class);
+            if (data.getList() !=null){
+                List<DayDataList> list = data.getList();
+                for (DayDataList dayDataList : list) {
+                    dayDataList.setId(UUID.randomUUID().toString().replace("-", "").replace(" ", "").substring(0,16));
+                }
+                list.remove(0);
+                data.setLast_updated_date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())+"");
+                if (!list.isEmpty()){
+                    dailyDateMapper.insertDayList(list);
+                }
+            }
+    }
 
     @Override
     public ResultVo dayData(DailyDataQuery dailyDataQuery) {
-        dailyDataQuery.setToken(getToken());
-        dailyDataQuery.setMember_id("800050613231");
-        if (dailyDataQuery.getStart_date() == null || dailyDataQuery.getEnd_date() == null){
+        List<PlatformVo> list1 = platformMapper.selectPId(1);
+        int insert = 0;
+        DayVo data = null;
+        for (PlatformVo platformVo : list1) {
+            dailyDataQuery.setToken(getToken());
+            dailyDataQuery.setMember_id(platformVo.getPlatform_id().toString());
             LocalDate localDate = LocalDate.now().minusDays(0);
             Integer date = Integer.valueOf(localDate.toString().replace("-","").replace("-",""));
             dailyDataQuery.setStart_date(date);
             dailyDataQuery.setEnd_date(date);
-        }
-        JSONObject jsonObject = HttpClientUtil.doGet(URL+"get", HttpClientUtil.getObject(dailyDataQuery));
-        DayVo data = JSONObject.toJavaObject(jsonObject, DayVo.class);
-        int insert = 0;
-        if (data.getList() !=null){
-            List<DayDataList> list = data.getList();
-            for (DayDataList dayDataList : list) {
-                dayDataList.setId(UUID.randomUUID().toString().replace("-", "").replace(" ", "").substring(0,16));
+            JSONObject jsonObject = HttpClientUtil.doGet(URL+"get", HttpClientUtil.getObject(dailyDataQuery));
+            data = JSONObject.toJavaObject(jsonObject, DayVo.class);
+
+            if (data.getList() !=null){
+                List<DayDataList> list = data.getList();
+                for (DayDataList dayDataList : list) {
+                    dayDataList.setId(UUID.randomUUID().toString().replace("-", "").replace(" ", "").substring(0,16));
+                }
+                list.remove(0);
+                data.setLast_updated_date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())+"");
+                if (!list.isEmpty()){
+                    insert = dailyDateMapper.insertDayList(list);
+                }
             }
-            list.remove(0);
-            data.setLast_updated_date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())+"");
-            if (!list.isEmpty()){
-                insert = dailyDateMapper.insertDayList(list);
-            }
         }
+
         return getResultVo(data,insert,DayVo.class);
     }
 

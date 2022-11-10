@@ -115,9 +115,9 @@ public class SwaggerConfig
         // 用ApiInfoBuilder进行定制
         return new ApiInfoBuilder()
                 // 设置标题
-                .title("山东码上第三方后台数据接口")
+                .title("山东码上后台管理系统数据接口")
                 // 描述
-                .description("山东码上第三方后台数据接口")
+                .description("山东码上后台管理系统数据接口")
                 // 作者信息
                 .contact(new Contact("山东码上", "http://www.codedapp.net/", "mashang@qq.com"))
                 // 版本

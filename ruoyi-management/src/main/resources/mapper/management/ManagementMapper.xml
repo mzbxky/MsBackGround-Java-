@@ -63,18 +63,21 @@
     </delete>
     <insert id="insertInfo">
         insert into ms_app(
-                id,name,pkg,ctime,utime,state,cid,tid,uid,exp)
+                id,name,pkg,ctime,utime,state,cid,tid,uid,exp,version)
                 values (
                 #{insertIntoManagementForm.id},#{insertIntoManagementForm.name},
                 #{insertIntoManagementForm.pkg},#{insertIntoManagementForm.ctime},
                 #{insertIntoManagementForm.utime},
                 #{insertIntoManagementForm.state},#{insertIntoManagementForm.cid},
                 #{insertIntoManagementForm.tid},
-                #{insertIntoManagementForm.userName},#{insertIntoManagementForm.exp}
+                #{insertIntoManagementForm.userName},#{insertIntoManagementForm.exp},#{insertIntoManagementForm.version}
         )
     </insert>
+<!--    where dept.dept_id = 102-->
     <select id="selectUser" resultType="com.ruoyi.domain.vo.UserVo">
-        select cms_sys_user.user_id as userId,cms_sys_user.user_name as userName,cms_sys_user.nick_name as nickName from cms_sys_user where user_name != 'admin' and user_name != 'root'
+        select cms_sys_user.user_id as userId,cms_sys_user.user_name as userName,cms_sys_user.nick_name as nickName from cms_sys_user
+        left join cms_sys_dept dept on dept.dept_id = cms_sys_user.dept_id
+
     </select>
     <select id="userInfo" resultType="com.ruoyi.domain.vo.UserInfoVo">
         select cms_sys_user.user_id as userId,sr.role_key as roleKey from cms_sys_user

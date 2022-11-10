@@ -7,13 +7,13 @@
         select name from ms_platform
     </select>
     <select id="selectPlatformList" resultType="com.ruoyi.vo.PlatformVo">
-        select * from ms_platform
+        select *,p_id as platform_id from ms_platform
         <where>
             <if test="platformQuery.id != null and platformQuery.id != ''">
                 and id = #{platformQuery.id}
             </if>
             <if test="platformQuery.platform_id != null and platformQuery.id != ''">
-                and platform_id = #{platformQuery.platform_id}
+                and p_id = #{platformQuery.platform_id}
             </if>
             <if test="platformQuery.name != null and platformQuery.name != ''">
                 and name like concat('%',#{platformQuery.name},'%')
@@ -42,7 +42,16 @@
     </update>
 
     <insert id="insertInfo">
-        insert into ms_platform (id, name, company, secret, alias) VALUES (
-        #{updatePlatformForm.id},#{updatePlatformForm.name},#{updatePlatformForm.company},#{updatePlatformForm.secret},#{updatePlatformForm.alias})
+        insert into ms_platform (id, name, company, secret, alias,p_id) VALUES (
+        #{updatePlatformForm.id},#{updatePlatformForm.name},#{updatePlatformForm.company},#{updatePlatformForm.secret},#{updatePlatformForm.alias},#{updatePlatformForm.platform_id})
     </insert>
+
+<!--    查询平台id、密钥-->
+    <select id="selectPId" resultType="com.ruoyi.vo.PlatformVo">
+        select p_id as platform_id,secret,type from ms_platform
+        where 1=1
+        <if test="type != null">
+            and type = #{type}
+        </if>
+    </select>
 </mapper>

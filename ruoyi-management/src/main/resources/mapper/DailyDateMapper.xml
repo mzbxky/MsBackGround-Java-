@@ -6,7 +6,7 @@
 
     <insert id="insertDayList">
         insert into ms_ylh_data_day(
-        id, member_id, app_id, medium_name, placement_id, placement_name, date, ad_request_count, ad_return_count, pv, click, ad_fill_rate, ad_exposure_rate, click_rate, revenue, ecpm
+        id, memberid, appid, appname, slotid, slotname, date, reqcount, retcount, pv, click, fillrate, exprate, clickrate, revenue, ecpm
         )
         values
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
@@ -15,13 +15,13 @@
              #{item.ad_return_count},#{item.pv},#{item.click},#{item.ad_fill_rate},#{item.ad_exposure_rate},
              #{item.click_rate},#{item.revenue},#{item.ecpm})
         </foreach>
-        ON DUPLICATE KEY UPDATE date = values(date),ad_request_count = values(ad_request_count),ad_return_count = values(ad_return_count),
-                                pv = values(pv),click = values(click),ad_fill_rate = values(ad_fill_rate),ad_exposure_rate = values(ad_exposure_rate),
-                                click_rate = values(click_rate),revenue = values(revenue),ecpm = values(ecpm)
+        ON DUPLICATE KEY UPDATE date = values(date),reqcount = values(reqcount),retcount = values(retcount),
+                                pv = values(pv),click = values(click),fillrate = values(fillrate),exprate = values(exprate),
+                                clickrate = values(clickrate),revenue = values(revenue),ecpm = values(ecpm)
     </insert>
 
     <insert id="insertHourList">
-        insert into ms_ylh_data_day(id, app_id, medium_name, placement_id, placement_name, revenue, ecpm, pv, click, click_rate)
+        insert into ms_ylh_data_day(id, appid, appname, slotid, slotname, revenue, ecpm, pv, click, clickrate)
         values
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
             (#{item.id},#{item.app_id},#{item.medium_name},#{item.placement_id},
@@ -31,21 +31,18 @@
     </insert>
 
     <select id="selectDayData" resultType="com.ruoyi.vo.DayDataListVo">
-        select msday.id, msday.medium_name, msday.placement_name, msday.date, cast(msday.ad_request_count as int) as ad_request_count ,
+        select msday.id, msday.appname, msday.slotname, msday.date, cast(msday.ad_request_count as int) as ad_request_count ,
         cast(msday.ad_return_count as int) as ad_return_count ,
         cast(msday.pv as int) as pv , cast(msday.click as int) as click,
-        cast(LEFT(msday.ad_fill_rate,LENGTH(msday.ad_fill_rate)-1) as float) as ad_fill_rate,
-        cast(LEFT(msday.ad_exposure_rate,LENGTH(msday.ad_exposure_rate)-1) as float) as ad_exposure_rate,
-        cast(LEFT(msday.click_rate,LENGTH(msday.click_rate)-1) as float) as click_rate,
+        cast(LEFT(msday.fillrate,LENGTH(msday.fillrate)-1) as float) as ad_fill_rate,
+        cast(LEFT(msday.exprate,LENGTH(msday.exprate)-1) as float) as ad_exposure_rate,
+        cast(LEFT(msday.clickrate,LENGTH(msday.clickrate)-1) as float) as click_rate,
         msday.revenue, msday.ecpm
         from ms_ylh_data_day msday
         <where>
         <if test="dayDataListQuery.mediaName != null and dayDataListQuery.mediaName != ''">
-            and msday.medium_name like concat('%',#{dayDataListQuery.mediaName},'%')
+            and msday.appname like concat('%',#{dayDataListQuery.mediaName},'%')
         </if>
-            <if test="dayDataListQuery.placementName != null and dayDataListQuery.placementName != ''">
-                and msday.placement_name like concat('%',#{dayDataListQuery.placementName},'%')
-            </if>
         <if test="dayDataListQuery.startDate != null and dayDataListQuery.startDate != ''">
             and date(msday.date) &gt;= #{dayDataListQuery.startDate}
         </if>
@@ -57,22 +54,22 @@
     </select>
 
     <!--总览-->
+<!--                   round(AVG(LEFT(msday.ad_fill_rate,LENGTH(msday.ad_fill_rate)-1)+0),2) as ad_fill_rate,
+               round(AVG(LEFT(msday.click_rate,LENGTH(msday.click_rate)-1)+0),2) as click_rate,
+               round(AVG(LEFT(msday.ad_exposure_rate,LENGTH(msday.ad_exposure_rate)-1)+0),2) as ad_exposure_rate,-->
     <select id="selectOverview" resultType="com.ruoyi.vo.DayDataListVo">
-        select msday.medium_name, msday.placement_name, msday.date,
-               SUM(cast(msday.ad_request_count as INT)) as ad_request_count,
-               SUM(cast(msday.ad_return_count as int)) as ad_return_count,
-               SUM(cast(msday.pv as int)) as pv, SUM(cast(msday.click as int)) as click,
-               round(AVG(cast(LEFT(msday.ad_fill_rate,LENGTH(msday.ad_fill_rate)-1) as float)),2) as ad_fill_rate,
-               round(AVG(cast(LEFT(msday.click_rate,LENGTH(msday.click_rate)-1) as float)),2) as click_rate,
-               round(AVG(cast(LEFT(msday.ad_exposure_rate,LENGTH(msday.ad_exposure_rate)-1) as float)),2) as ad_exposure_rate,
+        select msday.appname as medium_name, msday.slotname, msday.date,
+               SUM(msday.reqcount+0) as ad_request_count,
+               SUM(msday.retcount+0) as ad_return_count,
+               SUM(msday.pv+0) as pv, SUM(msday.click+0) as click,
+               round(AVG(LEFT(msday.fillrate,LENGTH(msday.fillrate)-1)+0),2) as ad_fill_rate,
+               round(SUM(msday.click+0)/SUM(msday.pv+0)*100,2) as click_rate,
+               round(AVG(LEFT(msday.exprate,LENGTH(msday.exprate)-1)+0),2) as ad_exposure_rate,
                SUM(msday.revenue) as revenue,SUM(msday.ecpm) as ecpm
                from ms_ylh_data_day msday
-        where medium_name != ''
+        where appname != ''
         <if test="dayDataListQuery.mediaName != null and dayDataListQuery.mediaName != ''">
-            and msday.medium_name like concat('%',#{dayDataListQuery.mediaName},'%')
-        </if>
-        <if test="dayDataListQuery.placementName != null and dayDataListQuery.placementName != ''">
-            and msday.placement_name like concat('%',#{dayDataListQuery.placementName},'%')
+            and msday.appname like concat('%',#{dayDataListQuery.mediaName},'%')
         </if>
         <if test="dayDataListQuery.startDate != null and dayDataListQuery.startDate != ''">
             and date(msday.date) &gt;= #{dayDataListQuery.startDate}
@@ -85,24 +82,24 @@
                 msday.date
             </if>
             <if test="dayDataListQuery.byMediumName == true">
-                ,msday.medium_name
+                ,msday.appname
             </if>
         </trim>
         order by msday.date desc
     </select>
     <!--查询媒体-->
     <select id="selectMediaName" resultType="java.lang.String">
-        select medium_name from ms_ylh_data_day group by medium_name
+        select appname from ms_ylh_data_day group by appname
     </select>
 
     <!--查询广告位名称-->
     <select id="selectPlacementName" resultType="java.lang.String">
-        select placement_name from ms_ylh_data_day
+        select slotname from ms_ylh_data_day
         <where>
             <if test="mediaName!='null' and mediaName !=''">
-                medium_name = #{mediaName}
+                appname = #{mediaName}
             </if>
         </where>
-        group by placement_name
+        group by pname
     </select>
 </mapper>

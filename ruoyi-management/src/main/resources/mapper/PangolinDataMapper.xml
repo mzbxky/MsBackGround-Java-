@@ -6,16 +6,16 @@
 
     <insert id="insertPangolinService">
         insert into ms_csj_data_day(
-            id, appid, appname, slotid, package_name, reqcount, retcount, pv, click, clickrate, revenue, ecpm, mediation,slotname,date
+            id, appid, appname, slotid, pkg, reqcount, retcount, pv, click, clickrate, revenue, ecpm, mediation,slotname,date,memberid
         ) VALUES
         <foreach collection="list" item="item" index="index" open="" separator="," close="">
             (#{item.id},#{item.app_id},#{item.app_name},#{item.ad_slot_id},
             #{item.package_name},#{item.request},#{item.response},
             #{item.show},#{item.click},#{item.click_rate},#{item.revenue},
-            #{item.ecpm},#{item.use_mediation},#{item.slot_name},#{item.date})
+            #{item.ecpm},#{item.use_mediation},#{item.slot_name},#{item.date},#{item.memberid})
         </foreach>
         ON DUPLICATE KEY UPDATE pv = values(pv),click = values(click),revenue = values(revenue),ecpm = values(ecpm),
-        clickrate = values(clickrate),reqcount = values(reqcount),retcount = values(retcount)
+        clickrate = values(clickrate),reqcount = values(reqcount),retcount = values(retcount),memberid = values(memberid)
     </insert>
 
     <!--查询 -->
@@ -55,7 +55,7 @@
 
     <!--查询合计-->
     <select id="sumList" resultType="com.ruoyi.vo.DataReportSecondVo">
-        select date,round(avg(ecpm),2) as ecpm,round(SUM(revenue),2) as revenue,round(avg(clickrate),2) as click_rate,sum(click) as click,SUM(reqcount) as request,SUM(retcount) as response,slotid as ad_slot_id,appname as app_name,
+        select date,round(avg(ecpm),2) as ecpm,round(SUM(revenue),2) as revenue,round(sum(click)/sum(pv)*100,2) as click_rate,sum(click) as click,SUM(reqcount) as request,SUM(retcount) as response,slotid as slotid,appname as app_name,
                slotname as slot_name,sum(pv) as 'show'
         from ms_csj_data_day
         <where>

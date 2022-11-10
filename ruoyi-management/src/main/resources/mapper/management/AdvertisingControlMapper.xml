@@ -61,7 +61,7 @@
         <set>
             ads.version = #{updateAdvertisingForm.version},
             ads.channel = #{updateAdvertisingForm.channel},
-            ads.ctime = #{updateAdvertisingForm.ctime},
+            ads.utime = #{updateAdvertisingForm.utime},
         </set>
         <where>
             ads.id = #{updateAdvertisingForm.id}
@@ -102,11 +102,12 @@
                 state,
                 ctime,
                 confirm,
-                channel
+                channel,
+                utime
         )
         values
         <foreach collection="insertInfo" item="item" index="index" open="" separator="," close="">
-            (#{item.id},#{item.name},#{item.pck},#{item.version},#{item.state},#{item.ctime},#{item.confirm},#{item.channel})
+            (#{item.id},#{item.name},#{item.pck},#{item.version},#{item.state},#{item.ctime},#{item.confirm},#{item.channel},#{item.utime})
         </foreach>
     </insert>
     <!--插入渠道-->
@@ -121,7 +122,6 @@
                 and ms_app.uid = #{userName}
             </if>
         </where>
-group by ms_app.name
     </select>
     <!--查询渠道-->
     <select id="selectChannel" resultType="com.ruoyi.domain.vo.ChannelVo">

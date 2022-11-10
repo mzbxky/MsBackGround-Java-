@@ -28,4 +28,6 @@ public class DataReportSecondVo {
     private Float ecpm;
     private Integer use_mediation;
     private String date;
+    //平台账号id
+    private Long memberid;
 }

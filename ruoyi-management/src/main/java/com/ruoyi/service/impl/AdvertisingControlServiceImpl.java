@@ -40,10 +40,10 @@ public class AdvertisingControlServiceImpl implements AdvertisingControlService 
         if (updateAdvertisingForm.getChannel() == null){
             updateAdvertisingForm.setChannel("1");
         }
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String dateToStr = dateFormat.format(date);
-        updateAdvertisingForm.setCtime(dateToStr);
+        updateAdvertisingForm.setUtime(dateToStr);
         return advertisingControlMapper.updateControlList(updateAdvertisingForm);
     }
 
@@ -74,10 +74,11 @@ public class AdvertisingControlServiceImpl implements AdvertisingControlService 
                 insertChannelForm.setId(UUID.randomUUID().toString().replace("-", "").replace(" ", ""));
                 insertChannelForm.setChannel(s1);
                 //设置插入时间
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date date = new Date();
                 String dateToStr = dateFormat.format(date);
                 insertChannelForm.setCtime(dateToStr);
+                insertChannelForm.setUtime(dateToStr);
                 if (insertChannelForm.getState() == null) {
                     insertChannelForm.setState(0);
                 }

@@ -22,6 +22,7 @@ public class UpdateAdvertisingForm {
     //插入/更新时间
     @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private String ctime;
+    private String utime;
     //渠道标识符
     private String channel;
 }

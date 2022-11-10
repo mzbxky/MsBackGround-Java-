@@ -24,4 +24,6 @@ public interface SummaryMapper {
     List<AnyUserAnyDateVo> selectAnyUser(@Param("date") String date);
 
     int insertIntoSum(@Param("list") List<AnyUserAnyDateVo> list);
+
+    List<SummaryShowVo> indexChart(@Param("summaryQuery") SummaryQuery summaryQuery);
 }

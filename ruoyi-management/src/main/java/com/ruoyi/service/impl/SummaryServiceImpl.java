@@ -62,4 +62,18 @@ public class SummaryServiceImpl implements SummaryService {
         }
         return resultVo;
     }
+
+    @Override
+    public ResultVo indexChart(SummaryQuery summaryQuery) {
+        List<SummaryShowVo> summaryShowVos = summaryMapper.indexChart(summaryQuery);
+        ResultVo resultVo = new ResultVo();
+        resultVo.setCode(-1);
+        resultVo.setMsg("暂无数据");
+        if (summaryShowVos .size() >0){
+            resultVo.setCode(0);
+            resultVo.setMsg("查询成功");
+            resultVo.setData(summaryShowVos);
+        }
+        return resultVo;
+    }
 }

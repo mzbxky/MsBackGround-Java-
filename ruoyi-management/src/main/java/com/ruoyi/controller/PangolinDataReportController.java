@@ -77,22 +77,22 @@ public class PangolinDataReportController {
         DataReportSecondQuery dataReportSecondQuery = new DataReportSecondQuery();
         dataReportSecondQuery.setDate(LocalDate.now().minusDays(1).toString());
         pangolinDataService.getDataReport(dataReportSecondQuery);
-        Boolean csj = stringRedisTemplate.hasKey("CSJ");
-        if (csj){
-            stringRedisTemplate.opsForValue().increment("CSJ",1);
-            int s = Integer.parseInt(stringRedisTemplate.opsForValue().get("CSJ"));
-            if (s>3){
-                stringRedisTemplate.delete("YLH");
-                stringRedisTemplate.delete("CSJ");
-                stringRedisTemplate.opsForValue().set("CSJ","1");
-            }
-            if(stringRedisTemplate.opsForValue().get("YLH").equals("3")&&stringRedisTemplate.opsForValue().get("CSJ").equals("3")){
-                summaryService.insertIntoBus();
-                stringRedisTemplate.delete("YLH");
-                stringRedisTemplate.delete("CSJ");
-            }
-        }else {
-            stringRedisTemplate.opsForValue().set("CSJ","1");
-        }
+//        Boolean csj = stringRedisTemplate.hasKey("CSJ");
+//        if (csj){
+//            stringRedisTemplate.opsForValue().increment("CSJ",1);
+//            int s = Integer.parseInt(stringRedisTemplate.opsForValue().get("CSJ"));
+//            if (s>3){
+//                stringRedisTemplate.delete("YLH");
+//                stringRedisTemplate.delete("CSJ");
+//                stringRedisTemplate.opsForValue().set("CSJ","1");
+//            }
+//            if(stringRedisTemplate.opsForValue().get("YLH").equals("3")&&stringRedisTemplate.opsForValue().get("CSJ").equals("3")){
+//                summaryService.insertIntoBus();
+//                stringRedisTemplate.delete("YLH");
+//                stringRedisTemplate.delete("CSJ");
+//            }
+//        }else {
+//            stringRedisTemplate.opsForValue().set("CSJ","1");
+//        }
     }
 }

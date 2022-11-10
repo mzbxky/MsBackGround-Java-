@@ -3,6 +3,7 @@ package com.ruoyi.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.uuid.UUID;
 import com.ruoyi.dao.PlatformMapper;
 import com.ruoyi.form.UpdatePlatformForm;
 import com.ruoyi.query.PlatformQuery;
@@ -48,8 +49,8 @@ public class MsPlatformServiceImpl implements MsPlatformService {
 
     @Override
     public ResultVo updateInfo(UpdatePlatformForm updatePlatformForm) {
-        //String a = Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes(StandardCharsets.UTF_8));
-        //System.out.println("解密"+new String(Base64.getDecoder().decode(a)));
+        String a = Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes(StandardCharsets.UTF_8));
+        System.out.println("解密"+new String(Base64.getDecoder().decode(a)));
         updatePlatformForm.setSecret(Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes(StandardCharsets.UTF_8)));
         int affectedRows = platformMapper.updateInfo(updatePlatformForm);
         ResultVo resultVo = new ResultVo();
@@ -64,7 +65,8 @@ public class MsPlatformServiceImpl implements MsPlatformService {
 
     @Override
     public ResultVo insertInfo(UpdatePlatformForm updatePlatformForm) {
-        updatePlatformForm.setSecret(SecurityUtils.encryptPassword(updatePlatformForm.getSecret()));
+        updatePlatformForm.setId(UUID.randomUUID().toString().replace("-", "").replace(" ", "").substring(0,16));
+        updatePlatformForm.setSecret(Base64.getEncoder().encodeToString(updatePlatformForm.getSecret().getBytes(StandardCharsets.UTF_8)));
         int affectedRows = platformMapper.insertInfo(updatePlatformForm);
         ResultVo resultVo = new ResultVo();
         resultVo.setCode(-1);

@@ -21,4 +21,5 @@ public interface DailyDateService {
     List<String> selectPlacementName(@Param("mediaName") String mediaName);
 
     ResultVo selectOverview(DayDataListQuery dayDataListQuery);
+    void scheduld(DailyDataQuery dailyDataQuery);
 }

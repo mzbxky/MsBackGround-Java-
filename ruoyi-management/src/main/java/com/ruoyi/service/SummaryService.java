@@ -10,4 +10,6 @@ public interface SummaryService {
     ResultVo pageShow(SummaryQuery summaryQuery);
 
     ResultVo pageShowUser(SummaryQuery summaryQuery);
+
+    ResultVo indexChart(SummaryQuery summaryQuery);
 }

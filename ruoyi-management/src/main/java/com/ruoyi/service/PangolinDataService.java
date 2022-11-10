@@ -18,4 +18,6 @@ public interface PangolinDataService {
     List<Long> selectCodeBit(String appName);
 
     ResultVo selectSumList(ReportDataForMySqlQuery reportDataForMySqlQuery);
+
+    void scheduledTask(DataReportSecondQuery dataReportSecondQuery);
 }

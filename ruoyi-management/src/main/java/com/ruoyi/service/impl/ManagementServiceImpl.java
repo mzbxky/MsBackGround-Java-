@@ -43,7 +43,7 @@ public class ManagementServiceImpl implements ManagementService {
         if (updateMediaManagementForm.getVersion() == null){
             updateMediaManagementForm.setVersion("0");
         }
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String dateToStr = dateFormat.format(date);
         updateMediaManagementForm.setUtime(dateToStr);
@@ -57,13 +57,13 @@ public class ManagementServiceImpl implements ManagementService {
 
     @Override
     public Integer insertInfo(InsertIntoManagementForm insertIntoManagementForm) {
-        //查询整个数据库
+        //查询整个数据库   
         List<MediaManagementVo> mediaManagementVos = managementMapper.selectList(new ManagementQuery());
         String s = UUID.randomUUID().toString();
         String uId = s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
         //设置uuid
         insertIntoManagementForm.setId(uId);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String dateToStr = dateFormat.format(date);
         //设置插入时间

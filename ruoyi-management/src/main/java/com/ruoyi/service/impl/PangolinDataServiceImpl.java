@@ -7,11 +7,13 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.enums.HttpMethod;
 import com.ruoyi.common.utils.uuid.UUID;
 import com.ruoyi.dao.PangolinDataMapper;
+import com.ruoyi.dao.PlatformMapper;
 import com.ruoyi.query.ReportDataForMySqlQuery;
 import com.ruoyi.query.pangolinDataReport.DataReportSecondQuery;
 import com.ruoyi.service.PangolinDataService;
 import com.ruoyi.util.HttpClientUtil;
 import com.ruoyi.vo.DataReportSecondVo;
+import com.ruoyi.vo.PlatformVo;
 import com.ruoyi.vo.ResultVo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,8 @@ import java.util.Set;
 public class PangolinDataServiceImpl implements PangolinDataService {
     @Autowired
     private PangolinDataMapper pangolinDataMapper;
-
+    @Autowired
+    private PlatformMapper platformMapper;
     public final static String URL = "https://open-api.csjplatform.com/union_media/open_api/rt/income";
     //获取sign
     public static String getSign(Map<String, String> request, String token){
@@ -91,60 +94,91 @@ public class PangolinDataServiceImpl implements PangolinDataService {
         }
         return new RestTemplate().getForObject(url, String.class);
     }
-
-    @Override
-    public ResultVo getDataReport(DataReportSecondQuery dataReportSecondQuery) {
-        String date;
-        if (dataReportSecondQuery.getDate() == null || dataReportSecondQuery.getDate().equals("")){
-            date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        }else {
-            date = dataReportSecondQuery.getDate();
-        }
+    public Map<String, String> getParam(){
         TreeMap<String,String> param=new TreeMap();
-        param.put("user_id","69197");
-        param.put("role_id","69197");
         param.put("sign_type","MD5");
         param.put("version","2.0");
         param.put("timestamp",String.valueOf(System.currentTimeMillis()));
-        param.put("date",date);
         param.put("region","cn");
         param.put("currency","cny");
         param.put("time_zone","8");
-        String sign = getSign(param,"880ab0f2df2e0ba2cc82c9b0c419fc0d");
-        param.put("sign",sign);
-        //调用方法拼接url并发送请求，将返回值string转为JSON
-        JSONObject jsonObject = JSONObject.parseObject(getForObject(URL, param));
-        //JSONObject jsonObject = HttpClientUtil.doGet(URL, param);
-        JSONObject jsonObject1 = JSONObject.parseObject(jsonObject.get("Data").toString());
-        List o = (List)jsonObject1.get(date);
+        return param;
+    }
+//定时任务
+    @Override
+    public void scheduledTask(DataReportSecondQuery dataReportSecondQuery){
         List<DataReportSecondVo> dataReportSecondVoList = new ArrayList<>();
+        Map<String, String> param = getParam();
+        param.put("user_id",dataReportSecondQuery.getUser_id().toString());
+        param.put("role_id",dataReportSecondQuery.getRole_id().toString());
+        param.put("date",dataReportSecondQuery.getDate());
+        String sign = getSign(param,dataReportSecondQuery.getSign());
+        param.put("sign",sign);
+        JSONObject jsonObject = JSONObject.parseObject(getForObject(URL, param));
+        JSONObject jsonObject1 = JSONObject.parseObject(jsonObject.get("Data").toString());
+        List o = (List)jsonObject1.get(dataReportSecondQuery.getDate());
         for (Object o1 : o) {
-            DataReportSecondVo dataReportSecondVo;
+            DataReportSecondVo dataReportSecondVo = new DataReportSecondVo();
             dataReportSecondVo = JSONObject.toJavaObject((JSON) o1, DataReportSecondVo.class);
             dataReportSecondVo.setId(UUID.randomUUID().toString().replace("-", "").replace(" ", "").substring(0,16));
-            switch (dataReportSecondVo.getAd_slot_type()){
-                case 1:
-                    dataReportSecondVo.setSlot_name("信息流");break;
-                case 2:
-                    dataReportSecondVo.setSlot_name("Banner");break;
-                case 3:
-                    dataReportSecondVo.setSlot_name("开屏");break;
-                case 4:
-                    dataReportSecondVo.setSlot_name("插屏");break;
-                case 5:
-                    dataReportSecondVo.setSlot_name("激励视频");break;
-                case 6:
-                    dataReportSecondVo.setSlot_name("全屏视频");break;
-                case 7:
-                    dataReportSecondVo.setSlot_name("Draw信息流");break;
-                case 8:
-                    dataReportSecondVo.setSlot_name("贴片");break;
-                case 9:
-                    dataReportSecondVo.setSlot_name("新插屏广告");break;
-            }
-            dataReportSecondVoList.add(dataReportSecondVo);
+            dataReportSecondVo.setMemberid(dataReportSecondQuery.getUser_id());
+            change(dataReportSecondVoList, dataReportSecondVo);
         }
         pangolinDataMapper.insertPangolinService(dataReportSecondVoList);
+    }
+
+    private void change(List<DataReportSecondVo> dataReportSecondVoList, DataReportSecondVo dataReportSecondVo) {
+        switch (dataReportSecondVo.getAd_slot_type()){
+            case 1:
+                dataReportSecondVo.setSlot_name("信息流");break;
+            case 2:
+                dataReportSecondVo.setSlot_name("Banner");break;
+            case 3:
+                dataReportSecondVo.setSlot_name("开屏");break;
+            case 4:
+                dataReportSecondVo.setSlot_name("插屏");break;
+            case 5:
+                dataReportSecondVo.setSlot_name("激励视频");break;
+            case 6:
+                dataReportSecondVo.setSlot_name("全屏视频");break;
+            case 7:
+                dataReportSecondVo.setSlot_name("Draw信息流");break;
+            case 8:
+                dataReportSecondVo.setSlot_name("贴片");break;
+            case 9:
+                dataReportSecondVo.setSlot_name("新插屏广告");break;
+        }
+        dataReportSecondVoList.add(dataReportSecondVo);
+    }
+
+    @Override
+    public ResultVo getDataReport(DataReportSecondQuery dataReportSecondQuery) {
+        List<PlatformVo> list = platformMapper.selectPId(0);
+        List<DataReportSecondVo> dataReportSecondVoList = null;
+        JSONObject jsonObject = null;
+        for (PlatformVo platformVo : list) {
+            dataReportSecondVoList = new ArrayList<>();
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            Map<String, String> param = getParam();
+            param.put("user_id",platformVo.getPlatform_id().toString());
+            param.put("role_id",platformVo.getPlatform_id().toString());
+            param.put("date",date);
+            String sign = getSign(param,platformVo.getSecret());
+            param.put("sign",sign);
+            //调用方法拼接url并发送请求，将返回值string转为JSON
+            jsonObject = JSONObject.parseObject(getForObject(URL, param));
+            //JSONObject jsonObject = HttpClientUtil.doGet(URL, param);
+            JSONObject jsonObject1 = JSONObject.parseObject(jsonObject.get("Data").toString());
+            List o = (List)jsonObject1.get(date);
+            for (Object o1 : o) {
+                DataReportSecondVo dataReportSecondVo;
+                dataReportSecondVo = JSONObject.toJavaObject((JSON) o1, DataReportSecondVo.class);
+                dataReportSecondVo.setMemberid(platformVo.getPlatform_id());
+                dataReportSecondVo.setId(UUID.randomUUID().toString().replace("-", "").replace(" ", "").substring(0,16));
+                change(dataReportSecondVoList, dataReportSecondVo);
+            }
+            pangolinDataMapper.insertPangolinService(dataReportSecondVoList);
+        }
         ResultVo resultVo = new ResultVo();
         resultVo.setCode(-1);
         resultVo.setMsg("暂无数据");

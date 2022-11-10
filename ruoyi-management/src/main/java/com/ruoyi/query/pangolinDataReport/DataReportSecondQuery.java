@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class DataReportSecondQuery {
-    private Integer user_id;
-    private Integer role_id;
+    private Long user_id;
+    private Long role_id;
     private Integer timestamp;
     private String version;
     private String date;

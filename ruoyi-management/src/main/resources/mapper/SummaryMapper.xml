@@ -19,7 +19,7 @@
         select SUM(ylh.revenue)*app.rate/100 as tincome,app.id as aid,ylh.date as date,
                app.uid as uid,app.state
         from ms_ylh_data_day ylh
-                 left join ms_app app on app.tid = ylh.app_id
+                 left join ms_app app on app.tid = ylh.appid
         where ylh.date = #{date}
         group by ylh.date,app.id
         having app.id is not null
@@ -49,6 +49,9 @@
         ON DUPLICATE KEY UPDATE cincome = values(cincome),tincome = values(tincome)
     </insert>
     <!--页面展示-->
+<!--            <if test="summaryQuery.userId != null and summaryQuery.userId != ''">
+           and bus.uid = #{summaryQuery.userId}
+        </if>-->
     <select id="pageShow" resultType="com.ruoyi.vo.SummaryShowVo">
         select bus.cincome as cincome,bus.tincome as tincome,bus.time as time,user.nick_name as nickName,app.name as appName,app.pkg as pkg,(ifnull(bus.tincome,0)+ifnull(bus.cincome,0)) as total
         from ms_adata_bus bus
@@ -56,7 +59,7 @@
         left join cms_sys_user user on user.user_id = bus.uid
         where 1=1
         <if test="summaryQuery.userId != null and summaryQuery.userId != ''">
-           and bus.uid = #{summaryQuery.userId}
+            and  bus.uid = #{summaryQuery.userId}
         </if>
           <if test="summaryQuery.startDate != null and summaryQuery.startDate != ''">
               and date(bus.time) &gt;= #{summaryQuery.startDate}
@@ -73,12 +76,15 @@
         order by bus.time desc
     </select>
     <!--页面展示(用户)-->
+<!--            <if test="summaryQuery.userId != null and summaryQuery.userId != ''">
+          and  sum.uid = #{summaryQuery.userId}
+        </if>-->
     <select id="pageShowUser" resultType="com.ruoyi.vo.SummaryShowVo">
         select sum.cincome as cincome,sum.tincome as tincome,sum.time as time,user.nick_name as nickName,(ifnull(sum.tincome,0)+ifnull(sum.cincome,0)) as total from ms_adata_sum sum
         left join cms_sys_user user on user.user_id = sum.uid
         where 1=1
         <if test="summaryQuery.userId != null and summaryQuery.userId != ''">
-          and  sum.uid = #{summaryQuery.userId}
+            and  sum.uid = #{summaryQuery.userId}
         </if>
         <if test="summaryQuery.startDate != null and summaryQuery.startDate != ''">
             and date(sum.time) &gt;= #{summaryQuery.startDate}
@@ -87,5 +93,12 @@
             and date(sum.time) &lt;= #{summaryQuery.endDate}
         </if>
         order by sum.time desc
+    </select>
+
+    <!--首页折线图数据-->
+    <select id="indexChart" resultType="com.ruoyi.vo.SummaryShowVo">
+        select bus.time as time,sum(bus.cincome) as cincome,sum(bus.tincome) as tincome from ms_adata_bus bus
+        where date(bus.time) &gt;= #{summaryQuery.startDate} and date(bus.time) &lt;= #{summaryQuery.endDate}
+        group by bus.time
     </select>
 </mapper>
